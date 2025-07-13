@@ -16,7 +16,7 @@ jobs:
   bump-and-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout all history
+      - name: Checkout code & tags
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -36,23 +36,17 @@ jobs:
 
       - name: Bump version & create tag
         env:
-          BUMPLEVEL: ${{ github.event.inputs.level }}   # patch|minor|major
+          BUMPLEVEL: ${{ github.event.inputs.level }}
         run: |
-          # make sure we have all tags locally
-          git fetch --tags
-
-          # pick up the latest tag, drop the leading 'v'
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          echo "Latest Git tag: $LATEST_TAG"
-          CURRENT=${LATEST_TAG#v}
-
-          # now bump from that true current version
-          bump2version --current-version ${CURRENT} --allow-dirty ${BUMPLEVEL}
-
+          # bump2version will:
+          # 1) read VERSION (e.g. "0.0.2")
+          # 2) increment the patch/minor/major
+          # 3) write new VERSION, commit, and tag v0.0.3
+          bump2version --allow-dirty ${BUMPLEVEL}
 
       - name: Push commit + tag
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}   # PAT with contents:write
         run: |
           git remote set-url origin \
             https://x-access-token:${PAT_TOKEN}@github.com/${{ github.repository }}.git
