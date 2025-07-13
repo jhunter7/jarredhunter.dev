@@ -1,4 +1,3 @@
-# .github/workflows/release.yml
 name: 🏷️ Cut Release
 
 on:
@@ -10,7 +9,7 @@ on:
         default: 'patch'
 
 permissions:
-  contents: write      
+  contents: write
 
 jobs:
   bump-and-release:
@@ -21,37 +20,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bump version
-        id: semver
+      - name: Set up Python & bump2version
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install bump2version
+        run: pip install bump2version
+
+      - name: Bump version (and tag)
+        env:
+          BUMPLEVEL: ${{ github.event.inputs.level }}  # 'major'|'minor'|'patch'
         run: |
-          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "Current tag: $LATEST"
-          # split into numbers
-          IFS='.' read -r MAJOR MINOR PATCH <<< "${LATEST#v}"
+          bump2version --current-version $(cat VERSION) \
+                       --allow-dirty \
+                       ${BUMPLEVEL}
 
-          case "${{ github.event.inputs.level }}" in
-            major) MAJOR=$((MAJOR+1)); MINOR=0; PATCH=0 ;;
-            minor) MINOR=$((MINOR+1)); PATCH=0 ;;
-            patch) PATCH=$((PATCH+1)) ;;
-          esac
-
-          NEW="v${MAJOR}.${MINOR}.${PATCH}"
-          echo "New tag: $NEW"
-          echo "::set-output name=new_tag::$NEW"
-
-      - name: Create Git tag
+      - name: Push commit + tag via PAT
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          git tag ${{ steps.semver.outputs.new_tag }}
-          # use PAT so push triggers other workflows
-          git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/${{ github.repository }}.git
-          git push origin ${{ steps.semver.outputs.new_tag }}
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.semver.outputs.new_tag }}
-          name: Release ${{ steps.semver.outputs.new_tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git remote set-url origin \
+            https://x-access-token:${PAT_TOKEN}@github.com/${{ github.repository }}.git
+          git push origin HEAD:main --follow-tags
