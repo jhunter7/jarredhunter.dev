@@ -1,11 +1,11 @@
-# .github/workflows/deploy-manual.yml
-name: 🚀 Deploy Specific Tag
+# .github/workflows/deploy-tag.yml
+name: 🚀 Deploy by Tag
 
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Which Docker tag to deploy (e.g. v1.2.3)'
+        description: 'Docker image tag to deploy (e.g. v1.2.3)'
         required: true
 
 permissions:
@@ -16,18 +16,21 @@ env:
 
 jobs:
   deploy:
+    name: Deploy Tag ${{ github.event.inputs.tag }}
     runs-on: ubuntu-latest
     steps:
-      - name: SSH & Deploy
+      - name: SSH & roll out deployment
         uses: appleboy/ssh-action@v1.0.0
         with:
           host:     ${{ secrets.K3S_SERVER_IP }}
           username: ${{ secrets.K3S_SERVER_USER }}
           key:      ${{ secrets.K3S_SSH_PRIVATE_KEY }}
           script: |
-            TAG=${{ github.event.inputs.tag }}
-            echo "Deploying tag: $TAG"
+            set -euo pipefail
+            TAG="${{ github.event.inputs.tag }}"
+            echo "Deploying image: ${IMAGE_NAME}:${TAG}"
             kubectl set image deployment/jhdev-website \
-              jhdev-website=${IMAGE_NAME}:${TAG} -n jhdev
+              jhdev-website=${IMAGE_NAME}:${TAG} \
+              -n jhdev
             kubectl rollout status deployment/jhdev-website \
               -n jhdev --timeout=300s
