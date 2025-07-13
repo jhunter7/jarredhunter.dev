@@ -1,3 +1,4 @@
+# .github/workflows/release.yml
 name: 🏷️ Cut Release
 
 on:
@@ -20,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python & bump2version
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
@@ -28,15 +29,13 @@ jobs:
       - name: Install bump2version
         run: pip install bump2version
 
-      - name: Bump version (and tag)
+      - name: Bump version & create tag
         env:
-          BUMPLEVEL: ${{ github.event.inputs.level }}  # 'major'|'minor'|'patch'
+          BUMPLEVEL: ${{ github.event.inputs.level }}
         run: |
-          bump2version --current-version $(cat VERSION) \
-                       --allow-dirty \
-                       ${BUMPLEVEL}
+          bump2version --allow-dirty ${BUMPLEVEL}  # e.g. 'patch', 'minor', 'major'
 
-      - name: Push commit + tag via PAT
+      - name: Push commit + tag
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
