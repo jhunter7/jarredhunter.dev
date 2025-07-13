@@ -3,7 +3,7 @@ name: CI • Build, Tag, Push & Deploy
 
 permissions:
   contents: write  
-  
+
 on:
   push:
     branches:
@@ -81,7 +81,9 @@ jobs:
   # ──────────────────────────────────────────────────────────────────────────
   deploy:
     name: SSH & Rollout to K3s
-    needs: build
+    needs: 
+      - build
+      - version
     runs-on: ubuntu-latest
     steps:
       - name: SSH to K3s and update deployment
