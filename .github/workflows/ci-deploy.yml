@@ -4,7 +4,10 @@ name: 🚀 CI • Build & Deploy on Tag
 on:
   push:
     tags:
-      - 'v*'            # runs only when a vX.Y.Z tag is pushed
+      - 'v*'
+  create:
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
@@ -15,7 +18,6 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code at tag
         uses: actions/checkout@v4
