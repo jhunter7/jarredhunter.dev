@@ -1,0 +1,57 @@
+# .github/workflows/release.yml
+name: 🏷️ Cut Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: 'Release level: major, minor, or patch'
+        required: true
+        default: 'patch'
+
+permissions:
+  contents: write      
+
+jobs:
+  bump-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout all history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump version
+        id: semver
+        run: |
+          LATEST=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Current tag: $LATEST"
+          # split into numbers
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${LATEST#v}"
+
+          case "${{ github.event.inputs.level }}" in
+            major) MAJOR=$((MAJOR+1)); MINOR=0; PATCH=0 ;;
+            minor) MINOR=$((MINOR+1)); PATCH=0 ;;
+            patch) PATCH=$((PATCH+1)) ;;
+          esac
+
+          NEW="v${MAJOR}.${MINOR}.${PATCH}"
+          echo "New tag: $NEW"
+          echo "::set-output name=new_tag::$NEW"
+
+      - name: Create Git tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.semver.outputs.new_tag }}
+          git push origin ${{ steps.semver.outputs.new_tag }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.semver.outputs.new_tag }}
+          name: Release ${{ steps.semver.outputs.new_tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
