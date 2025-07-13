@@ -36,9 +36,19 @@ jobs:
 
       - name: Bump version & create tag
         env:
-          BUMPLEVEL: ${{ github.event.inputs.level }}
+          BUMPLEVEL: ${{ github.event.inputs.level }}   # patch|minor|major
         run: |
-          bump2version --allow-dirty ${BUMPLEVEL}
+          # make sure we have all tags locally
+          git fetch --tags
+
+          # pick up the latest tag, drop the leading 'v'
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "Latest Git tag: $LATEST_TAG"
+          CURRENT=${LATEST_TAG#v}
+
+          # now bump from that true current version
+          bump2version --current-version ${CURRENT} --allow-dirty ${BUMPLEVEL}
+
 
       - name: Push commit + tag
         env:
