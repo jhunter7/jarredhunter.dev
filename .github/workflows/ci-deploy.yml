@@ -1,6 +1,9 @@
 # .github/workflows/ci-deploy.yml
 name: CI • Build, Tag, Push & Deploy
 
+permissions:
+  contents: write  
+  
 on:
   push:
     branches:
