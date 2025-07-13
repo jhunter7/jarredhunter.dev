@@ -21,6 +21,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configure Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "actions@github.com"
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -33,7 +38,7 @@ jobs:
         env:
           BUMPLEVEL: ${{ github.event.inputs.level }}
         run: |
-          bump2version --allow-dirty ${BUMPLEVEL}  # e.g. 'patch', 'minor', 'major'
+          bump2version --allow-dirty ${BUMPLEVEL}
 
       - name: Push commit + tag
         env:
