@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: jhunter7/jarredhunter.dev
+  IMAGE_NAME: jhunter7/jhdev
 
 jobs:
   # ──────────────────────────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ jobs:
           key: ${{ secrets.K3S_SSH_PRIVATE_KEY }}
           script: |
             echo "Deploying image tag: ${{ needs.version.outputs.new_version }}"
-            kubectl set image deployment/jarredhunter-dev \
-              jarredhunter-dev=${{ env.IMAGE_NAME }}:${{ needs.version.outputs.new_version }} \
+            kubectl set image deployment/jhdev-website \
+              jhdev-website=${{ env.IMAGE_NAME }}:${{ needs.version.outputs.new_version }} \
               -n jhdev
-            kubectl rollout status deployment/jarredhunter-dev -n jhdev
+            kubectl rollout status deployment/jhdev-website -n jhdev
