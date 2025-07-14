@@ -176,17 +176,17 @@ body {
 }
 
 .btn.download-btn {
-    background: #3b82f6;
-    color: white;
+    background: #3b82f6 !important;
+    color: white !important;
     border: none;
-    text-decoration: none;
+    text-decoration: none !important;
     font-weight: 400;
 }
 
 .btn.download-btn:hover {
-    background: #2563eb;
-    color: white;
-    text-decoration: none;
+    background: #2563eb !important;
+    color: white !important;
+    text-decoration: none !important;
 }
 
 .btn:hover {
