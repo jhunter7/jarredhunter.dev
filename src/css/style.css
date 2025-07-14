@@ -171,6 +171,24 @@ body {
     text-decoration: none;
 }
 
+.btn.download-btn i {
+    margin-right: 0.5rem;
+}
+
+.btn.download-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+.btn.download-btn:hover {
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+}
+
 .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -769,7 +787,7 @@ a:hover, .experience-accordion a:hover {
 }
 
 .degree-title {
-    font-size: 1.15rem;
+    font-size: 1.4rem;
     color: var(--text-color);
     font-weight: 500;
 }
