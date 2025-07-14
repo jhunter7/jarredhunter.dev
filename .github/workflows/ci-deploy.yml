@@ -1,4 +1,3 @@
-
 # .github/workflows/ci-deploy.yml
 name: CI • Build, Tag, Push & Deploy
 
@@ -15,15 +14,18 @@ env:
   IMAGE_NAME: jhunter7/jhdev
 
 jobs:
-  # ──────────────────────────────────────────────────────────────────────────
   version:
     name: Determine & Bump Semantic Version
     runs-on: ubuntu-latest
     outputs:
       new_version: ${{ steps.bump.outputs.new_version }}
     steps:
-      - name: Check out code
+      # 1️⃣ Fetch full history + all tags so we can see existing releases
+      - name: Check out code with tags
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0     # full history
+          fetch-tags: true   # fetch all tags
 
       - id: bump
         name: Bump patch version
@@ -37,17 +39,18 @@ jobs:
           NEW="v${MAJOR}.${MINOR}.${PATCH}"
           echo "Bumped to $NEW"
           echo "::set-output name=new_version::$NEW"
+
       - name: Push Git tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # insert token into remote URL so push uses it
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git remote set-url origin \
+            https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           git tag ${{ needs.version.outputs.new_version }}
           git push origin ${{ needs.version.outputs.new_version }}
-  # ──────────────────────────────────────────────────────────────────────────
+
   build:
     name: Build & Push Docker Image
     needs: version
@@ -75,10 +78,10 @@ jobs:
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.VERSION }}
             ${{ env.IMAGE_NAME }}:latest
-  # ──────────────────────────────────────────────────────────────────────────
+
   deploy:
     name: SSH & Rollout to K3s
-    needs: 
+    needs:
       - build
       - version
     runs-on: ubuntu-latest
@@ -86,12 +89,14 @@ jobs:
       - name: SSH to K3s and update deployment
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.K3S_SERVER_IP }}
+          host:     ${{ secrets.K3S_SERVER_IP }}
           username: ${{ secrets.K3S_SERVER_USER }}
-          key: ${{ secrets.K3S_SSH_PRIVATE_KEY }}
+          key:      ${{ secrets.K3S_SSH_PRIVATE_KEY }}
           script: |
-            echo "Deploying image tag: ${{ needs.version.outputs.new_version }}"
+            TAG=${{ needs.version.outputs.new_version }}
+            echo "Deploying image tag: ${TAG}"
             kubectl set image deployment/jhdev-website \
-              jhdev-website=${{ env.IMAGE_NAME }}:${{ needs.version.outputs.new_version }} \
+              jhdev-website=${{ env.IMAGE_NAME }}:${TAG} \
               -n jhdev
-            kubectl rollout status deployment/jhdev-website -n jhdev
+            kubectl rollout status deployment/jhdev-website \
+              -n jhdev --timeout=300s
