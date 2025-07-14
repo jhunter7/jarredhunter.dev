@@ -60,7 +60,7 @@ jobs:
     needs: version
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ needs.version.outputs.new_version#v }}   # strip leading 'v' if you want just X.Y.Z
+      VERSION: ${{ needs.version.outputs.new_version }}   # strip leading 'v' if you want just X.Y.Z
     steps:
       - uses: actions/checkout@v4
 
@@ -100,4 +100,3 @@ jobs:
               -n jhdev
             kubectl rollout status deployment/jhdev-website \
               -n jhdev --timeout=300s
-          
