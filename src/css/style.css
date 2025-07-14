@@ -181,12 +181,19 @@ body {
     border: none;
     text-decoration: none !important;
     font-weight: 400;
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    border-radius: 0.5rem;
+    transition: var(--transition);
+    margin: 0 0.5rem;
 }
 
 .btn.download-btn:hover {
     background: #2563eb !important;
     color: white !important;
     text-decoration: none !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn:hover {
