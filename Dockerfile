@@ -1,11 +1,14 @@
-# BEFORE: FROM nginx:alpine
-FROM nginxinc/nginx-unprivileged:stable-alpine
+# Use the official Nginx image as a base
+FROM nginx:alpine
 
-# Static files
-COPY *.html /usr/share/nginx/html/
-COPY *.webp /usr/share/nginx/html/
+# Remove the default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-# Port 8080 is already used in this image
-EXPOSE 8080
+# Copy your static site files to the nginx public directory
+COPY src/ /usr/share/nginx/html/
 
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx when the container launches
 CMD ["nginx", "-g", "daemon off;"]
