@@ -205,6 +205,7 @@ body {
     100% { text-shadow: 3px 3px 0px #1a1a1a, 0 0 20px #ffe066; }
 }
 
+
 /* Sections */
 section {
     padding: 5rem 0;
@@ -745,11 +746,11 @@ a:hover, .experience-accordion a:hover {
 .tech-tile {
     background: var(--section-bg);
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     margin-bottom: 0;
     text-align: center;
-    min-height: 120px;
+    min-height: 80px;
     display: flex;
     flex-direction: column;
     justify-content: center;
