@@ -161,10 +161,10 @@ nav {
 }
 .btn-primary {
   font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 11px 22px;
-  border-radius: 6px; background: var(--accent); color: var(--bg);
-  text-decoration: none; letter-spacing: .02em; transition: opacity .15s, transform .15s;
+  border-radius: 6px; background: transparent; border: 1px solid var(--border2); color: var(--text);
+  text-decoration: none; letter-spacing: .02em; transition: border-color .2s, color .2s, transform .15s;
 }
-.btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+.btn-primary:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
 .btn-ghost {
   font-family: var(--mono); font-size: 12px; padding: 11px 22px; border-radius: 6px;
   border: 1px solid var(--border2); color: var(--text); text-decoration: none;
@@ -250,8 +250,6 @@ section { padding: 96px 0; }
 }
 .sidebar-card-k::before { content: '> '; opacity: .5; }
 .sidebar-card-v { font-size: 12.5px; color: var(--text); line-height: 1.5; display: flex; align-items: center; gap: 8px; }
-.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
 /* ─── FOCUS ─── */
 .focus-intro {
@@ -344,7 +342,7 @@ section { padding: 96px 0; }
 
 /* ─── CONTACT ─── */
 #contact { background: var(--bg2); border-top: 1px solid var(--border); }
-.contact-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: start; }
+.contact-grid { max-width: 640px; }
 .contact-lede { font-family: var(--body); font-weight: 400; font-size: 15.5px; color: var(--prose); line-height: 1.7; margin-bottom: 24px; }
 .contact-lede strong { color: var(--heading); font-weight: 500; }
 .contact-links { display: flex; flex-direction: column; gap: 10px; }
@@ -356,15 +354,6 @@ section { padding: 96px 0; }
 .contact-link:hover { border-color: var(--border2); color: var(--accent); }
 .ck { color: var(--accent); min-width: 70px; font-size: 11px; }
 .ck::before { content: '> '; opacity: .5; }
-.contact-aside-title { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--heading); margin-bottom: 10px; }
-.contact-aside-body { font-family: var(--body); font-size: 14px; color: var(--prose); line-height: 1.7; margin-bottom: 20px; }
-.contact-aside-body strong { color: var(--heading); font-weight: 500; }
-.open-badge {
-  display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px;
-  color: var(--accent); border: 1px solid var(--border2); border-radius: 20px; padding: 6px 14px;
-  background: color-mix(in srgb, var(--accent) 6%, transparent); letter-spacing: .02em;
-}
-
 /* ─── FOOTER ─── */
 footer {
   border-top: 1px solid var(--border); padding: 26px 0;
@@ -382,7 +371,6 @@ footer {
 /* ─── Responsive ─── */
 @media (max-width: 720px) {
   .nav-links { display: none; }
-  .contact-grid { grid-template-columns: 1fr; }
   .timeline-item { grid-template-columns: 1fr; gap: 12px; }
   .focus-grid, .projects-grid { grid-template-columns: 1fr; }
   .hero-meta-row { flex-direction: column; }
