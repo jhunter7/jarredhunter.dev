@@ -1,528 +1,499 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jarred Hunter - Principal Security Platform Engineer</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="7b5f57f9-e7fa-4ba4-9820-37300ce57bfb"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jarred Hunter — AI Security &amp; Platform Engineering</title>
+  <meta name="description" content="Jarred Hunter — senior engineer securing AI/ML systems: model hardening, agent guardrails, secure model infrastructure, and zero-trust platform engineering." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">JarredHunter.dev</div>
-            <div class="nav-actions">
-                <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#technologies">Skills</a></li>
-                    <li><a href="#work-experience">Experience</a></li>
-                    <li><a href="https://github.com/jhunter7/" target="_blank">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li><a href="https://cal.com/jhunter7/" target="_blank">Book Coffee</a></li>
-                </ul>
-                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Toggle light and dark mode">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#home" class="logo">jarredhunter.dev</a>
+      <ul class="nav-links">
+        <li><a href="#focus">focus</a></li>
+        <li><a href="#technologies">skills</a></li>
+        <li><a href="#work-experience">experience</a></li>
+        <li><a href="#projects">builds</a></li>
+        <li><a href="#contact">contact</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+        <a href="https://cal.com/jhunter7/" class="nav-cta" target="_blank" rel="noopener">./book-call</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section id="home">
+    <div class="container hero-content">
+      <div class="prompt">~/security $ whoami<span class="cursor">_</span></div>
+      <h1 class="hero-name">Jarred<br />Hunter</h1>
+      <div class="hero-sub">about</div>
+      <p class="hero-desc">
+        Principal-level engineer with 12+ years architecting and hardening SaaS and PaaS platforms, from late-stage
+        startups to global enterprises. I've worn many hats along the way: Systems Architect, DevOps Engineer,
+        SaaS/PaaS Platform Engineer, Forward-Deployed / Resident Solutions Engineer, and now Security Platform Engineer.
+        Across startups at every stage and large corporations alike, one constant has remained: I love solving the
+        engineering challenges that security work presents. Lately that's landed at the intersection of <strong>AI/ML
+        security, zero-trust identity, and cloud-native platform engineering</strong>: building security platforms
+        powered by AI and LLMs, and securing the models, agents, and pipelines the next decade will run on.
+      </p>
+      <div class="hero-actions">
+        <a href="#focus" class="btn-primary">./view-work</a>
+        <a href="https://www.linkedin.com/in/jarred-h-83204718/" class="btn-ghost" target="_blank" rel="noopener">linkedin</a>
+        <a href="https://github.com/jhunter7/" class="btn-ghost" target="_blank" rel="noopener">github</a>
+      </div>
+      <div class="hero-meta-row">
+        <div class="hero-stat">
+          <div class="stat-num">12<span>+</span></div>
+          <div class="stat-label">Years Experience</div>
         </div>
-    </nav>
-
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>Jarred Hunter</h1>
-            <h2>Principal Security Platform Engineer | DAD | Builder</h2>
-            <p class="hero-intro">
-                12+ years of experience building highly scalable and secure SaaS and PaaS platforms and security engineering. Principal-level engineer.
-            </p>
-            <div class="hero-social-links">
-                <a href="https://www.linkedin.com/in/jarred-h-83204718/" target="_blank" aria-label="LinkedIn">
-                    <i class="fab fa-linkedin"></i>
-                </a>
-                <a href="https://github.com/jhunter7/" target="_blank" aria-label="GitHub">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="mailto:jarredhunter6@gmail.com" aria-label="Email">
-                    <i class="fas fa-envelope"></i>
-                </a>
-                <a href="https://cal.com/jhunter7/" target="_blank" aria-label="Cal.com">
-                    <i class="fas fa-mug-hot"></i>
-                </a>
-            </div>
+        <div class="hero-meta">
+          <div class="meta-card">
+            <div class="meta-k">role</div>
+            <div class="meta-v">Senior Security Platform Engineer</div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-k">based</div>
+            <div class="meta-v">Alabama, US</div>
+          </div>
+          <div class="meta-card meta-card-wide">
+            <div class="meta-k">focus</div>
+            <div class="meta-v">Platform Engineering · Cloud Security · AI/ML Security · Zero-trust · Agentic Systems</div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <section id="about" class="about">
-        <div class="container">
-            <h2>About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>I'm a passionate DevOps Engineer and Software Developer with expertise in cloud technologies, containerization, and automation. I specialize in building scalable, resilient infrastructure and implementing CI/CD pipelines that enable teams to deliver value faster.</p>
-                    <p>With a strong foundation in both development and operations, I bridge the gap between software development and infrastructure management, ensuring smooth deployments and optimal system performance.</p>
-                </div>
-            </div>
+  <!-- ── FOCUS (forward-looking) ── -->
+  <section id="focus">
+    <div class="container">
+      <p class="section-tag reveal">// current projects</p>
+      <h2 class="section-heading reveal">Securing the model layer.</h2>
+      <p class="focus-intro reveal">
+        The hard problems are moving up the stack — from securing infrastructure to securing the models and agents
+        running on it. This is where I'm focused now.
+      </p>
+      <div class="focus-grid reveal">
+
+        <div class="focus-card">
+          <div class="focus-num">01</div>
+          <div class="focus-title">Model Security &amp; Hardening</div>
+          <p class="focus-desc">
+            Protecting models against extraction, inversion, poisoning, and adversarial inputs.
+            Threat modeling the full ML lifecycle — from training data integrity to inference-time defense.
+          </p>
+          <div class="focus-tags">
+            <span>adversarial robustness</span><span>model extraction defense</span><span>supply-chain integrity</span>
+          </div>
         </div>
-    </section>
 
-    <section id="technologies" class="section">
-        <div class="container">
-            <h2 class="section-title">Technical Skills</h2>
-            <div class="section-divider"></div>
-            
-            <h3 class="subsection-title">Cloud Services</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>GCP</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>AWS</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Azure</h3>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Languages</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>Groovy</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Go</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Python</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Bash</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Powershell</h3>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Infrastructure</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>Docker</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>EKS</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Helm</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Terraform</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Ansible</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Velero</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>KEDA</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>CloudFormation</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>vCluster</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>ECS</h3>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">CI/CD</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>ArgoCD</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Gitlab</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>GitHub Actions</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Jenkins</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Azure DevOps</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Artifactory</h3>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Observability</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>Prometheus</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>CloudWatch</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Datadog</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Grafana</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>OpenTelemetry</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>New Relic</h3>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Security</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>Prisma</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Vault</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>SonarQube</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Synk</h3>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Data</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>Snowflake</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Kafka</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>RDS</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>MySQL</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>PostgreSQL</h3>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>MS SQL</h3>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Compliance</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>ISO 27001</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Security</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>PCI DSS</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Payments</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>SOC 2</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Auditing</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>SOX</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Controls</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>GDPR</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Privacy</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>GRC</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Governance</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>COPPA</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Protection</span>
-                    </div>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Operating Systems</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>Linux</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">OS</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Ubuntu</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">OS</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>CentOS</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">OS</span>
-                    </div>
-                </div>
-            </div>
-
-            <h3 class="subsection-title">Agile Tooling</h3>
-            <div class="tech-tiles">
-                <div class="tech-tile">
-                    <h3>Atlassian Jira</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Agile</span>
-                    </div>
-                </div>
-
-                <div class="tech-tile">
-                    <h3>Confluence</h3>
-                    <div class="tech-pill-list">
-                        <span class="tech-pill">Agile</span>
-                    </div>
-                </div>
-            </div>
+        <div class="focus-card">
+          <div class="focus-num">02</div>
+          <div class="focus-title">Agent Guardrails</div>
+          <p class="focus-desc">
+            Building the policy and enforcement layer for autonomous agents — OPA-backed tool-use governance,
+            prompt injection defense, and runtime constraints on what an agent can actually access and do.
+          </p>
+          <div class="focus-tags">
+            <span>OPA / Rego</span><span>prompt injection defense</span><span>tool-use policy</span>
+          </div>
         </div>
-    </section>
 
-
-
-    <section id="work-experience" class="work-experience">
-        <div class="container">
-            <h2>Work Experience</h2>
-            <div class="experience-list">
-                <details class="experience-accordion" id="job-confidential">
-                    <summary>Senior Security Platform Engineer (Confidential) <span class="date">May 2026 – Present</span></summary>
-                </details>
-                <details class="experience-accordion" id="job-hashicorp">
-                    <summary>Forward Deployed Engineer <span class="date">Oct 2025 – May 2026</span></summary>
-                    <h4>HashiCorp, an IBM Company / San Francisco, CA / <a href="https://www.hashicorp.com/en" target="_blank">hashicorp.com</a></h4>
-                    <p>Senior Forward Deployed Engineer specializing in the HashiCorp stack, partnering with customer architects and platform teams to design, implement, and automate secure cloud operating models. Experienced in turning transformation roadmaps into operational reality through enterprise-grade deployments of Terraform, Vault, Boundary, and Consul; integrating identity, observability, and CI/CD ecosystems; codifying workflows and runbooks; and accelerating developer velocity while upholding governance, risk, and compliance objectives; translating patterns from enterprise engagements into actionable product feedback that influences roadmap direction and drives platform improvements.</p>
-                    <ul>
-                        <li>Embedded as a dedicated Resident/Platform Engineer within large enterprise customers to design and execute a zero-trust security architecture across Azure and AWS leveraging HashiCorp Boundary, delivering a phased roadmap, production-ready reference patterns, and automated infrastructure workflows that significantly hardened access to critical resources while preserving developer productivity.</li>
-                        <li>Owned design, implementation, architecture, and execution plans for Terraform, Vault, Boundary, Consul, Sentinel, and associated ecosystem integrations across multi-cloud environments.</li>
-                        <li>Implemented HashiCorp enterprise solutions end-to-end (governance/enterprise controls, identity, networking, and automation) aligned to the Cloud Operating Model, improving platform reliability and security posture.</li>
-                        <li>Policy-as-Code: Developed and enforced granular security guardrails across multi-cloud environments using HashiCorp Sentinel, automating compliance checks for Terraform deployments to ensure all provisioned infrastructure adhered to CIS benchmarks and internal security baselines.</li>
-                        <li>Vulnerability Management: Deployed Wiz CNAPP across multi-cloud environments and used contextual risk signals (exposure, reachability, identity) to separate real risk from noise; wired custom API integrations to auto-create and route Jira tickets on critical findings.</li>
-                        <li>Designed and configured integrations between HashiCorp tools and identity, CI/CD, observability, ITSM, and secrets management platforms (for example Okta/Azure AD, GitHub Actions, ServiceNow, and Datadog/Prometheus), enabling standardized and auditable workflows.</li>
-                        <li>Developed automation for repeatable deployment, configuration, and lifecycle management of HashiCorp platforms using Terraform, pipelines, and policy-as-code, reducing manual effort and drift.</li>
-                        <li>Developed operational runbooks, design docs, implementation guides, and support playbooks to standardize the deployment and operation of HashiCorp solutions for platform, security, and application teams.</li>
-                        <li>Advised application, platform, and SRE teams on patterns for integrating services with Terraform, Vault, and Boundary (for example dynamic credentials, just-in-time access, and service identity), accelerating secure adoption.</li>
-                        <li>Led workstreams within customer cloud transformation programs to align HashiCorp usage with target architectures, landing zones, and standardized workflows across AWS, Azure, and GCP.</li>
-                    </ul>
-                </details>
-                <details class="experience-accordion" id="job-comcast">
-                    <summary>Senior Security Platform Engineer (Lead) <span class="date">Oct 2023 – Oct 2025</span></summary>
-                    <h4>Comcast / Philadelphia, PA / <a href="https://www.comcasttechnologysolutions.com/" target="_blank">comcasttechnologysolutions.com</a></h4>
-                    <p>Lead Platform Engineer with a proven track record in building and refining platform capabilities and internal tooling to ensure resilience and operational effectiveness. Adept at owning the design and development of streamlined internal tools, engaging cross team engineers to drive continuous improvement, optimizing platform performance, and enhancing overall engineering efficiency and reliability.</p>
-                    <ul>
-                        <li>Architected and owned the 3-year platform roadmap with the strategy transforming an existing monolithic app stack into a component based, microservice platform deployed via CI/CD and state managed with ArgoCD. Collaborated with product, security, and engineering leadership to prioritize initiatives, define deliverables, and track strategic metrics.</li>
-                        <li>Mentored and led a cohort of 5+ platform engineers in a globally distributed team, facilitating daily stand-ups; scoped epics and assigned tasks during sprint planning; and developed and tracked annual KPIs to measure team performance and drive continuous improvement.</li>
-                        <li>Designed and implemented a multi-stage GitHub Actions CI/CD workflows, automating AWS EKS cluster provisioning and reducing deployment times by 30%.</li>
-                        <li>Automated end-to-end vulnerability scanning by integrating SonarQube SAST into CI/CD workflows and Snyk SCA for container image builds, surfacing and remediating security flaws early in development (shift left security model).</li>
-                        <li>Delivered multi-arch Kubernetes workloads by building ARM64/AMD64 container images and structuring cluster scheduling: created architecture-specific node groups, applied node/pod affinity, taints, and tolerations to guarantee correct placement; implemented CI/CD (e.g., Docker Buildx + QEMU emulation + layer caching) for parallel ARM/AMD image builds and continuously tuned caching/concurrency to reduce build time.</li>
-                        <li>Designed, deployed and management of a multi-AZ AWS VPC segmented into public, private, and database subnets using Terraform modules, enforcing granular network isolation and least-privilege routing to reduce blast radius and enhance security posture.</li>
-                        <li>Implemented Linkerd service mesh to secure inter-service communications and improve observability and traffic management across microservices.</li>
-                        <li>Designed architecture and deploy strategy of Linkerd service mesh with automatic mutual TLS (mTLS) to enforce end-to-end encryption, secure inter-service communications, and enable granular observability and traffic management across microservices.</li>
-                        <li>Implemented ArgoCD for streamlined GitOps workflows, adopting a component-based deployment strategy to enable configurable service meshes across tenant-specific Kubernetes clusters, ensuring scalability, maintainability, and automation.</li>
-                        <li>Developed custom Helm charts within component-based repos to streamline deployment management, ensuring controlled, repeatable, and scalable releases across Kubernetes clusters.</li>
-                        <li>Architected and implemented end-to-end Datadog observability—building custom dashboards, baseline metrics, advanced queries, alerting, and alert-driven automated workflows—to enable proactive performance tuning, rapid incident resolution, and strategic capacity planning across distributed, high-scale environments.</li>
-                        <li>Enhanced observability after implementing AWS Distro for OpenTelemetry, achieving a 40% reduction in debugging time through improved logging and metrics integration.</li>
-                        <li>Deployed vCluster for multi-tenant development environments—integrated with GitHub Actions to enable on-demand, lightweight, and isolated clusters—significantly reducing operational overhead and accelerating testing.</li>
-                        <li>Designed and implemented cost-efficient auto-scaling strategies using Karpenter, optimizing resource allocation and reducing infrastructure costs by 35%.</li>
-                        <li>Enhanced the scalability and resiliency of the application Platform by integrating Event Driven Autoscaling (KEDA).</li>
-                        <li>Expanded data resource ingestion by designing and deploying Kafka MSK and Redpanda into the platform.</li>
-                        <li>Designed and implemented a comprehensive disaster recovery strategy leveraging Velero for cluster backup and restoration, ensuring high availability and SOC2-compliant data protection. Monitored DR readiness through custom reporting/alerting & scheduled workflows, maintaining 100% recovery compliance.</li>
-                        <li>Developed GitHub Actions workflows to automate Snowflake database deployments/config and provisioning OCSF/OSWAP tables for seamless environment setup via python-based scripting, SnowSQL CLI and SQLAlchemy.</li>
-                        <li>Leads Platform Threat Modeling initiatives, identifying vulnerabilities and implementing strategic security measures.</li>
-                        <li>Performs detailed assessments of scan outputs to identify critical vulnerabilities, prioritizing issues based on risk and potential impact to the platform.</li>
-                        <li>Develops comprehensive risk reports outlining remediation progress and critical item evaluation, providing clear metrics and recommendations to stakeholders.</li>
-                        <li>Integrated a policy-as-code framework using Open Policy Agent (OPA) with custom policies into CI/CD workflows, automating compliance and security checks for consistent AWS EKS configurations and reduce manual oversight.</li>
-                        <li>Built and executed both synchronous and asynchronous machine learning workflows in AWS SageMaker Jupyter notebooks, enabling scalable training, inference, and data processing pipelines for batch and real-time use cases.</li>
-                        <li>Integrated Split.io feature flags into CI/CD pipelines to enable safe rollouts, A/B testing, and progressive delivery.</li>
-                        <li>Leveraged feature flags to reduce release risk by decoupling deploys from feature launches, improving deployment velocity and rollback safety.</li>
-                    </ul>
-                </details>
-                <details class="experience-accordion" id="job-jobcase">
-                    <summary>Senior DevOps Engineer (Lead) <span class="date">May 2022 – April 2023</span></summary>
-                    <h4>Jobcase / Cambridge, MA / <a href="https://www.jobcase.com/" target="_blank">jobcase.com</a></h4>
-                    <ul>
-                        <li><strong>Kubernetes & Microservices:</strong> Architected and monitored containerized workloads on AWS EKS using Helm, CodePipeline and GitHub Actions to deliver zero-downtime deployments.</li>
-                        <li><strong>Infrastructure as Code:</strong> Built and maintained Terraform/Terragrunt and CloudFormation stacks (60+ AWS accounts), automated RDS (MySQL/PostgreSQL) provisioning, AWS SSO role management, and developed Python-powered Ansible playbooks for repeatable deployments.</li>
-                        <li><strong>Cloud Migration & Cost Optimization:</strong> Led multiple on-prem→AWS migration projects—leveraging Snowball, S3 Transfer Acceleration, and DMS—to reduce hosting spend by 45%, saving $450K+ annually.</li>
-                        <li><strong>Observability & Security:</strong> Deployed end-to-end monitoring (Prometheus, Grafana, New Relic, Sumo Logic, Azure Monitor); administered Keycloak/OIDC and Vault for IAM; automated AWS access-key rotation via Lambda; and integrated CrowdStrike endpoint protection.</li>
-                        <li><strong>Leadership & Incident Management:</strong> Mentored junior engineers, coordinated Agile sprints and on-call rotations, and served as primary escalation point for Kubernetes, networking, and application incidents—ensuring rapid triage.</li>
-                    </ul>
-                </details>
-                <details class="experience-accordion" id="job-meazure">
-                    <summary>Senior DevOps Engineer <span class="date">Dec 2021 – 2022</span></summary>
-                    <h4>Meazure Learning / Hoover, AL / <a href="https://www.meazurelearning.com/" target="_blank">meazurelearning.com</a></h4>
-                    <ul>
-                        <li><strong>AWS Optimization & High Availability:</strong> Maintained 99.9% platform uptime for 15K+ concurrent users by automating RDS provisioning (Jenkins/Terraform) and optimizing CI/CD pipelines.</li>
-                        <li><strong>Container Security & Microservices:</strong> Hardened container security by deploying with Docker/Kaniko and integrating Artifactory Xray vulnerability scans—eliminated need for root-level Docker daemon access.</li>
-                        <li><strong>IaC:</strong> Built and maintained AWS infrastructure across multiple AWS accounts leveraging Terraform and Ansible.</li>
-                        <li><strong>Monitoring & Security Integration:</strong> Reduced incident response time by 35% through centralized observability (Prometheus, Grafana, Datadog, Sumo Logic, AWS SSM).</li>
-                        <li><strong>Leadership:</strong> Mentored junior engineers, managed on-call rotations, and served as primary escalation point for Kubernetes, networking, and application incidents.</li>
-                    </ul>
-                </details>
-                <details class="experience-accordion" id="job-olive">
-                    <summary>Senior DevOps Engineer <span class="date">March 2021 – November 2021</span></summary>
-                    <h4>Olive AI / Columbus, OH / <a href="https://www.crunchbase.com/organization/olive-ai" target="_blank">olive-ai</a></h4>
-                    <ul>
-                        <li><strong>AWS EKS Migration & Kubernetes Orchestration:</strong> Led the transition from both bare-metal and standalone Kubernetes clusters to AWS EKS, improving scalability and reducing operational complexity & downtime.</li>
-                        <li><strong>Infrastructure as Code & CI/CD:</strong> Provisioned and managed AWS resources (EC2, S3, EBS/EFS, Security Groups, Route 53, RDS, ALB/NLB) using Terraform, Terragrunt, and CloudFormation.</li>
-                        <li><strong>Secure VPN & Data Exchange:</strong> Established tunnel-to-tunnel VPNs (StrongSwan) for PHI-based ML/AI data transfer, automating VPN setup processes via Ansible and AWS Systems Manager. Served as an Infrastructure Touchpoint Engineer for external clients, ensuring encryption best practices and seamless data ingestion.</li>
-                        <li><strong>Observability & Reliability:</strong> Utilized Datadog and Nagios, Rundeck to automate alert remediation.</li>
-                        <li><strong>Automation & Platform Enhancements:</strong> Built an IaC-backed patching solution with AWS Systems Manager and GitLab CI/CD. Coordinated tasks in Jira, ensuring timely task delivery and cross-functional collaboration.</li>
-                    </ul>
-                </details>
-                <details class="experience-accordion" id="job-kemper">
-                    <summary>SysOps Administrator III <span class="date">Oct 2019 – March 2021</span></summary>
-                    <h4>Kemper / Birmingham, AL / <a href="https://www.kemper.com" target="_blank">kemper.com</a></h4>
-                    <ul>
-                        <li><strong>Enterprise AWS Architecture & Migration:</strong> Engineered and maintained a multi-account AWS environment with six environments, 20 AWS accounts, and 2,600+ Linux/Windows instances. Led on-premises-to-cloud migrations using CloudEndure, minimizing downtime and ensuring seamless transitions.</li>
-                        <li><strong>Infrastructure as Code & CI/CD:</strong> Leveraged Jenkins (Groovy pipelines), Ansible, Terraform, and CloudFormation to automate provisioning, deployments, and configuration management across environments.</li>
-                        <li><strong>Monitoring, Troubleshooting & Security:</strong> Utilized Prometheus/Grafana for observability and maintained PCI, SOX, and SOC 2 compliance with robust security controls.</li>
-                    </ul>
-                </details>
-                <details class="experience-accordion" id="job-uab">
-                    <summary>Systems Analyst III <span class="date">June 2018 – Oct 2019</span></summary>
-                    <h4>University of Alabama-Birmingham / Birmingham, AL / <a href="http://uab.edu/" target="_blank">uab.edu</a></h4>
-                    <ul>
-                        <li><strong>Linux Administration & Automation:</strong> Installed, configured, and administered RHEL/CentOS systems; set up and troubleshot network services (FTP, Telnet, SSH), managed Linux repositories, and automated data migrations.</li>
-                        <li><strong>Configuration Management & CI/CD:</strong> Designed/deployed/administered high powered compute nodes via IaC.</li>
-                        <li><strong>Monitoring & Automation:</strong> Utilized SolarWinds, CloudWatch, and Splunk for comprehensive observability.</li>
-                        <li>Developed ServiceNow API calls to automate Active Directory tasks, and scripting to streamline O365 functions.</li>
-                    </ul>
-                </details>
-                <details class="experience-accordion" id="job-altec">
-                    <summary>Systems Architect <span class="date">Sept 2015 – June 2018</span></summary>
-                    <h4>Altec Inc. / Birmingham, AL / <a href="https://www.altec.com" target="_blank">altec.com</a></h4>
-                    <ul>
-                        <li>Primary Windows Server & SQL Server admin for Siemens Teamcenter PLM (enterprise CAD/PLM platform).</li>
-                        <li>Technical lead for company-wide PLM upgrades: hardware sizing/procurement, licensing, installation, deployment, and validation.</li>
-                        <li>Monitored Dev/Test/Prod Teamcenter stacks with SolarWinds; tuned performance and availability.</li>
-                        <li>Delivered end‑to‑end infrastructure solutions: architecture, build/config, and project leadership to hit scope/timeline.</li>
-                        <li>Authored and maintained runbooks, design docs, and training materials; enforced quality standards.</li>
-                        <li>Provided 24/7 on-call support for critical production servers and databases; reported incidents/MTTR to the CIO.</li>
-                        <li>Researched new tech, ran PoCs, and negotiated pricing for future implementations.</li>
-                        <li>Built and managed VMware ESXi on Cisco UCS/Dell; administered 300+ Windows/Linux VMs.</li>
-                        <li>Managed datacenters, clusters, VM templates, patching, vMotion/storage vMotion, snapshots, and PowerCLI automation.</li>
-                        <li>Configured local/SAN storage, storage pools, LUNs, snapshots, and performed SAN migrations/replication.</li>
-                        <li>Deployed and operated Horizon VDI in production; staged and optimized virtual desktop clients.</li>
-                        <li>Implemented and maintained SQL Server instances across Prod/Dev/Test/Training: backups, DR restores, migrations, maintenance plans, alerts, and security.</li>
-                        <li>Tuned SQL performance by analyzing execution plans and optimizing queries.</li>
-                        <li>Standardized deployments through documented procedures and knowledge base articles.</li>
-                    </ul>
-                </details>
-            </div>
+        <div class="focus-card">
+          <div class="focus-num">03</div>
+          <div class="focus-title">Distillation &amp; Optimization</div>
+          <p class="focus-desc">
+            Distilling and optimizing models for secure, cost-efficient self-hosted deployment — shrinking
+            frontier capability into controllable, auditable models you actually own.
+          </p>
+          <div class="focus-tags">
+            <span>model distillation</span><span>quantization</span><span>self-hosted inference</span>
+          </div>
         </div>
-    </section>
 
-    <section id="education" class="education">
-        <div class="container">
-            <h2>Education and Certifications</h2>
-            <div class="degree-list">
-                <div class="degree-entry">
-                    <div class="degree-title">B.Sc. Management of Information Systems</div>
-                    <div class="degree-school">University of Alabama-Birmingham</div>
-                    <div class="degree-location">Birmingham, Alabama</div>
-                </div>
-                <div class="degree-entry">
-                    <div class="degree-title">B.Sc. Business Administration</div>
-                    <div class="degree-school">University of Alabama-Birmingham</div>
-                    <div class="degree-location">Birmingham, Alabama</div>
-                </div>
-            </div>
+        <div class="focus-card">
+          <div class="focus-num">04</div>
+          <div class="focus-title">Secure Model Infrastructure</div>
+          <p class="focus-desc">
+            Architecting cloud infrastructure to run models securely — isolated inference environments,
+            secrets-managed model access, network segmentation, and zero-trust identity for AI workloads.
+          </p>
+          <div class="focus-tags">
+            <span>isolated inference</span><span>secrets management</span><span>zero-trust AI workloads</span>
+          </div>
         </div>
-    </section>
 
+      </div>
+    </div>
+  </section>
 
+  <!-- ── SKILLS ── -->
+  <section id="technologies">
+    <div class="container">
+      <p class="section-tag reveal">// skills</p>
+      <h2 class="section-heading reveal">Stacks.</h2>
+      <div class="skills-categories reveal">
 
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2>Get In Touch</h2>
-            <div class="contact-content">
-                <div class="social-links">
-                    <a href="https://www.linkedin.com/in/jarred-h-83204718/" target="_blank"><i class="fab fa-linkedin"></i></a>
-                    <a href="https://github.com/jhunter7/" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="mailto:jarredhunter6@gmail.com"><i class="fas fa-envelope"></i></a>
-                    <a href="https://cal.com/jhunter7/" target="_blank"><i class="fas fa-mug-hot"></i></a>
-                </div>
-            </div>
+        <div class="skill-block">
+          <p class="skill-category-label">AI / ML Security &amp; Tooling</p>
+          <div class="skill-pills">
+            <span class="pill">Model Hardening</span>
+            <span class="pill">Agent Guardrails</span>
+            <span class="pill">Prompt Injection Defense</span>
+            <span class="pill">OPA / Rego</span>
+            <span class="pill">Model Distillation</span>
+            <span class="pill">Quantization</span>
+            <span class="pill">Anthropic API</span>
+            <span class="pill">llama.cpp · Ollama</span>
+            <span class="pill">Qwen2.5 · DeepSeek-R1</span>
+            <span class="pill">AWS SageMaker</span>
+            <span class="pill">MCP Protocol</span>
+            <span class="pill">MLOps Pipelines</span>
+          </div>
         </div>
-    </section>
 
+        <div class="skill-block">
+          <p class="skill-category-label">Security &amp; Zero-Trust</p>
+          <div class="skill-pills">
+            <span class="pill">HashiCorp Vault</span>
+            <span class="pill">HashiCorp Boundary</span>
+            <span class="pill">Sentinel</span>
+            <span class="pill">Wiz CNAPP</span>
+            <span class="pill">Prisma Cloud</span>
+            <span class="pill">CrowdStrike Falcon</span>
+            <span class="pill">SonarQube</span>
+            <span class="pill">Snyk</span>
+            <span class="pill">Threat Modeling</span>
+            <span class="pill">OWASP</span>
+            <span class="pill">SIEM</span>
+            <span class="pill">TLS</span>
+            <span class="pill">OIDC</span>
+            <span class="pill">CSPM · CIEM</span>
+            <span class="pill">SOC 2 · ISO 27001</span>
+            <span class="pill">PCI DSS · HIPAA</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">Cloud Services</p>
+          <div class="skill-pills">
+            <span class="pill">AWS</span>
+            <span class="pill">Azure</span>
+            <span class="pill">GCP</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">Automation &amp; IaC</p>
+          <div class="skill-pills">
+            <span class="pill">Terraform</span>
+            <span class="pill">Terraform Enterprise</span>
+            <span class="pill">Terragrunt</span>
+            <span class="pill">Crossplane</span>
+            <span class="pill">Pulumi</span>
+            <span class="pill">CloudFormation</span>
+            <span class="pill">Ansible</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">Microservices</p>
+          <div class="skill-pills">
+            <span class="pill">Docker</span>
+            <span class="pill">Kubernetes</span>
+            <span class="pill">EKS</span>
+            <span class="pill">AKS</span>
+            <span class="pill">GKE</span>
+            <span class="pill">Helm</span>
+            <span class="pill">vCluster</span>
+            <span class="pill">KEDA</span>
+            <span class="pill">Karpenter</span>
+            <span class="pill">Velero</span>
+            <span class="pill">Linkerd</span>
+            <span class="pill">Consul</span>
+            <span class="pill">Rancher</span>
+            <span class="pill">Packer</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">CI / CD</p>
+          <div class="skill-pills">
+            <span class="pill">ArgoCD</span>
+            <span class="pill">GitHub Actions</span>
+            <span class="pill">GitLab</span>
+            <span class="pill">Jenkins</span>
+            <span class="pill">Azure DevOps</span>
+            <span class="pill">Artifactory</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">Observability</p>
+          <div class="skill-pills">
+            <span class="pill">Prometheus</span>
+            <span class="pill">Grafana</span>
+            <span class="pill">Datadog</span>
+            <span class="pill">New Relic</span>
+            <span class="pill">CloudWatch</span>
+            <span class="pill">OpenTelemetry</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">Data</p>
+          <div class="skill-pills">
+            <span class="pill">Snowflake</span>
+            <span class="pill">Kafka</span>
+            <span class="pill">RDS</span>
+            <span class="pill">PostgreSQL</span>
+            <span class="pill">MySQL</span>
+            <span class="pill">MS SQL</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">Operating Systems</p>
+          <div class="skill-pills">
+            <span class="pill">Linux</span>
+            <span class="pill">Windows</span>
+          </div>
+        </div>
+
+        <div class="skill-block">
+          <p class="skill-category-label">Languages</p>
+          <div class="skill-pills">
+            <span class="pill">Go</span>
+            <span class="pill">Python</span>
+            <span class="pill">Bash</span>
+            <span class="pill">PowerShell</span>
+            <span class="pill">Groovy</span>
+            <span class="pill">HCL</span>
+            <span class="pill">Rego (OPA)</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── EXPERIENCE ── -->
+  <section id="work-experience">
+    <div class="container">
+      <p class="section-tag reveal">// experience</p>
+      <h2 class="section-heading reveal">Where I've shipped.</h2>
+      <div class="timeline">
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">Current</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Senior Security Platform Engineer</div>
+            <p class="timeline-desc">Forward-deployed security and platform engineering advisory across an enterprise customer base, focused on multi-cloud security architecture and AI/ML platform adoption.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">HashiCorp / IBM</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Senior Forward-Deployed / Resident Solutions Engineer</div>
+            <p class="timeline-desc">Embedded inside large enterprise customers to design and automate secure cloud operating models on the HashiCorp stack.</p>
+            <ul class="timeline-bullets">
+              <li><strong>Zero-trust:</strong> Phased Boundary and Vault rollouts hardening access to critical resources across Azure and AWS</li>
+              <li><strong>Policy-as-code:</strong> Sentinel guardrails enforcing CIS benchmarks on Terraform deployments</li>
+              <li><strong>CNAPP:</strong> Deployed Wiz across multi-cloud; auto-routed critical findings to Jira via API</li>
+              <li><strong>Integrations:</strong> Okta/Azure AD, GitHub Actions, ServiceNow, Datadog</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">Comcast</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Senior Security Platform Engineer (Lead)</div>
+            <p class="timeline-desc">Led a globally distributed platform team building security tooling and internal platform capabilities.</p>
+            <ul class="timeline-bullets">
+              <li><strong>Shift-left:</strong> SonarQube SAST and Snyk SCA in CI/CD, blocking high-severity findings before production</li>
+              <li><strong>Threat modeling:</strong> Mapped trust boundaries and drove findings to remediation closure</li>
+              <li><strong>Hardening:</strong> Terraform + OPA secure baselines; CIS-hardened EKS with RBAC and network policy</li>
+              <li><strong>MLOps:</strong> Built sync and async ML workflows in AWS SageMaker for training and inference</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">Jobcase</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Senior DevOps Engineer (Lead)</div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">Meazure Learning</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Senior DevOps Engineer</div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">Olive AI</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Senior DevOps Engineer</div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">Kemper</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">SysOps Administrator III</div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">UAB</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Systems Analyst III</div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-meta">
+            <div class="timeline-company">Altec Inc.</div>
+          </div>
+          <div class="timeline-body">
+            <div class="timeline-role">Systems Architect</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROJECTS / BUILDS ── -->
+  <section id="projects">
+    <div class="container">
+      <p class="section-tag reveal">// builds</p>
+      <h2 class="section-heading reveal">Things I've actually shipped.</h2>
+
+      <p class="builds-subhead reveal">Currently building</p>
+      <div class="projects-grid reveal">
+
+        <a href="https://github.com/jhunter7/" class="project-card building" target="_blank" rel="noopener">
+          <div class="building-tag">in progress</div>
+          <div class="project-name">Agent Guardrail Framework</div>
+          <div class="project-desc">OPA-enforced policy layer for autonomous IT-ops agents — runtime tool-use governance with layered prompt injection defenses, constraining what an agent can access and execute.</div>
+          <div class="project-tags"><span class="project-tag">OPA / Rego</span><span class="project-tag">Anthropic API</span><span class="project-tag">Python</span></div>
+        </a>
+
+        <a href="https://github.com/jhunter7/" class="project-card building" target="_blank" rel="noopener">
+          <div class="building-tag">in progress</div>
+          <div class="project-name">Secure Self-Hosted Model Stack</div>
+          <div class="project-desc">Distilled, quantized models running in isolated inference environments — secrets-managed access, network segmentation, and zero-trust identity for AI workloads on owned infra.</div>
+          <div class="project-tags"><span class="project-tag">llama.cpp</span><span class="project-tag">Vault</span><span class="project-tag">k3d / Docker</span></div>
+        </a>
+
+      </div>
+
+      <p class="builds-subhead reveal" style="margin-top:48px;">Shipped</p>
+      <div class="projects-grid reveal">
+
+        <a href="https://github.com/jhunter7/" class="project-card" target="_blank" rel="noopener">
+          <div class="project-name">Terraform IaC Security Review Agent</div>
+          <div class="project-desc">Agentic AI pipeline reviewing Terraform plans for security misconfigurations, with OPA-enforced guardrails and prompt injection defenses built into the tool-calling layer.</div>
+          <div class="project-tags"><span class="project-tag">Anthropic API</span><span class="project-tag">OPA / Rego</span><span class="project-tag">Terraform</span></div>
+        </a>
+
+        <a href="https://github.com/jhunter7/" class="project-card" target="_blank" rel="noopener">
+          <div class="project-name">Boundary MCP Server</div>
+          <div class="project-desc">Full Model Context Protocol server for HashiCorp Boundary — 18 tools exposing session management, target access, and credential injection. Built in both Go and Python.</div>
+          <div class="project-tags"><span class="project-tag">Go</span><span class="project-tag">Python</span><span class="project-tag">MCP Protocol</span></div>
+        </a>
+
+        <a href="https://github.com/jhunter7/" class="project-card" target="_blank" rel="noopener">
+          <div class="project-name">Local LLM Security Lab</div>
+          <div class="project-desc">M-series inference infrastructure running Qwen2.5-32B and DeepSeek-R1-32B via llama.cpp and Ollama, purpose-built for adversarial testing and red-teaming agentic pipelines.</div>
+          <div class="project-tags"><span class="project-tag">llama.cpp</span><span class="project-tag">Ollama</span><span class="project-tag">Docker / k3d</span></div>
+        </a>
+
+        <a href="https://github.com/jhunter7/" class="project-card" target="_blank" rel="noopener">
+          <div class="project-name">Enterprise K8s Platform Reference</div>
+          <div class="project-desc">Multi-service Kubernetes platform design with Linkerd mTLS, CloudNativePG, Strimzi/Kafka, Flagger canary deployments, ArgoCD GitOps, and full observability stack.</div>
+          <div class="project-tags"><span class="project-tag">Kubernetes</span><span class="project-tag">Linkerd</span><span class="project-tag">ArgoCD</span></div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="container">
+      <p class="section-tag reveal">// contact</p>
+      <h2 class="section-heading reveal">Let's build something<br />worth securing.</h2>
+      <div class="contact-grid reveal">
+        <div>
+          <p class="contact-lede">
+            Whether you're looking to bring in <strong>senior AI security engineering talent</strong>,
+            need a <strong>consulting partner for model security or agentic platform architecture</strong>,
+            or just want to talk about what governing autonomous systems looks like in production — I'd like to hear from you.
+          </p>
+          <div class="contact-links">
+            <a href="mailto:jarredhunter6@gmail.com" class="contact-link"><span class="ck">email</span>jarredhunter6@gmail.com</a>
+            <a href="https://www.linkedin.com/in/jarred-h-83204718/" class="contact-link" target="_blank" rel="noopener"><span class="ck">linkedin</span>/in/jarred-h-83204718</a>
+            <a href="https://github.com/jhunter7/" class="contact-link" target="_blank" rel="noopener"><span class="ck">github</span>/jhunter7</a>
+            <a href="https://cal.com/jhunter7/" class="contact-link" target="_blank" rel="noopener"><span class="ck">calendar</span>Book a 30-min coffee chat</a>
+          </div>
+        </div>
+        <div class="contact-aside">
+          <div class="contact-aside-title">Currently open to</div>
+          <p class="contact-aside-body">
+            Senior / Principal <strong>AI Security Engineer</strong> roles.<br />
+            <strong>Model security</strong> &amp; agentic platform advisory.<br />
+            Consulting on <strong>AI workload security</strong>, zero-trust, and CNAPP implementations.
+          </p>
+          <span class="open-badge"><span class="dot"></span>Available for new opportunities</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <div class="container">
     <footer>
-        <div class="container">
-            <p>&copy; 2025 Jarred Hunter. All rights reserved.</p>
-        </div>
+      <div class="footer-left">© 2026 <span>Jarred Hunter</span></div>
+      <div class="footer-right">AI SECURITY · ZERO-TRUST · PLATFORM ENGINEERING</div>
     </footer>
+  </div>
 
-    <script src="js/main.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
