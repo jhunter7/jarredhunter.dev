@@ -18,14 +18,39 @@ A containerized static site hosted in a K3s cluster, with an automated GitHub Ac
 
 ### Local Preview
 
-You can serve the static files locally, e.g.:
+Build the blog from Markdown, then serve the site:
 
 ```bash
-# using a simple live server
-npm install -g serve
-serve .
-Open your browser at http://localhost:5000 (default port).
+pip3 install -r scripts/requirements.txt
+python3 scripts/build_blog.py
+
+cd src
+python3 -m http.server 5500
+# http://localhost:5500/index.html
+# http://localhost:5500/blog/
 ```
+
+The Docker image runs the same blog build automatically before copying files into Nginx.
+
+### Blog (Markdown)
+
+- **Source:** `blog/posts/*.md` (not served directly)
+- **Output:** `src/blog/` (generated HTML — rebuilt on each Docker build)
+- **URL:** `https://jarredhunter.dev/blog/`
+
+Each post needs YAML front matter:
+
+```yaml
+---
+title: Post title
+date: 2026-06-01
+summary: Short line for the blog index
+---
+
+Markdown body here...
+```
+
+The filename is the URL slug: `my-topic.md` → `/blog/my-topic/`.
 ## CI/CD Workflow: `ci-deploy.yml`
 
 ### Trigger

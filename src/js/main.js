@@ -73,4 +73,75 @@
   } else {
     revealEls.forEach(function (el) { el.classList.add('visible'); });
   }
+
+  /* Blog: copy button on fenced code blocks */
+  function initBlogCopyButtons() {
+    document.querySelectorAll('.blog-content pre').forEach(function (pre) {
+      if (pre.closest('.code-block-wrap')) return;
+
+      var wrap = document.createElement('div');
+      wrap.className = 'code-block-wrap';
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'copy-code-btn';
+      btn.setAttribute('aria-label', 'Copy code to clipboard');
+      btn.textContent = 'copy';
+      wrap.insertBefore(btn, pre);
+
+      btn.addEventListener('click', function () {
+        var code = pre.querySelector('code');
+        var text = code ? code.innerText : pre.innerText;
+
+        function showCopied() {
+          btn.textContent = 'copied';
+          btn.classList.add('copied');
+          setTimeout(function () {
+            btn.textContent = 'copy';
+            btn.classList.remove('copied');
+          }, 2000);
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(showCopied).catch(function () {
+            fallbackCopy(text);
+            showCopied();
+          });
+        } else {
+          fallbackCopy(text);
+          showCopied();
+        }
+      });
+    });
+  }
+
+  function fallbackCopy(text) {
+    var area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.left = '-9999px';
+    document.body.appendChild(area);
+    area.select();
+    try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+    document.body.removeChild(area);
+  }
+
+  initBlogCopyButtons();
+
+  /* Blog: click terminal screenshot to view full size */
+  document.querySelectorAll('.terminal-shot').forEach(function (img) {
+    var src = img.getAttribute('src');
+    if (!src) return;
+    var link = document.createElement('a');
+    link.href = src;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.className = 'terminal-shot-link';
+    link.setAttribute('aria-label', 'Open screenshot full size');
+    img.parentNode.insertBefore(link, img);
+    link.appendChild(img);
+  });
 })();
