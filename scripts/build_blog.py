@@ -153,12 +153,12 @@ def render_index(posts: list[dict]) -> str:
     date = html.escape(post["date_display"])
     summary_html = f'<p class="blog-card-summary">{summary}</p>' if summary else ""
     cards.append(
-      f"""      <a href="{slug}/" class="blog-card">
+      f"""      <article class="blog-card">
         <div class="blog-card-date">{date}</div>
-        <h2 class="blog-card-title">{title}</h2>
+        <h2 class="blog-card-title"><a href="{slug}/">{title}</a></h2>
         {summary_html}
-        <span class="blog-card-link">./read-post</span>
-      </a>"""
+        <a href="{slug}/" class="blog-card-link">./read-post</a>
+      </article>"""
     )
 
   cards_block = "\n".join(cards) if cards else '      <p class="blog-empty">No posts yet. Add a <code>.md</code> file under <code>blog/posts/</code>.</p>'

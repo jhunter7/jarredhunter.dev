@@ -42,10 +42,8 @@ Along the way I'll show you the thing that made this click for me: I built an ag
 - Local LLMs solve the data residency problem — nothing leaves the machine
 - The tradeoff: you own the security of the inference environment
 - What this lab runs on: Ollama, Qwen2.5-32B
-> **Quick note on model selection:** For agentic work, tool-calling support is a
-> hard requirement, not a nice-to-have — many capable models (DeepSeek-R1 included)
-> don't have it and will fail the moment you hand them tools. I'm using Qwen2.5-32B
-> because it supports native tool calling and does it well at this size.
+
+> **Quick note on model selection:** For agentic work, tool-calling support is a hard requirement, not a nice-to-have — many capable models (DeepSeek-R1 included) don't have it and will fail the moment you hand them tools. I'm using Qwen2.5-32B because it supports native tool calling and does it well at this size.
 
 ---
 
