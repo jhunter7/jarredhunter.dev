@@ -107,6 +107,7 @@ def page_shell(
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{prefix}css/style.css" />
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="7b5f57f9-e7fa-4ba4-9820-37300ce57bfb" data-host-url="https://cloud.umami.is" data-domains="jarredhunter.dev,www.jarredhunter.dev"></script>
 </head>
 <body class="blog-page">
   <nav>
