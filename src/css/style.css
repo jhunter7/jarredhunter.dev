@@ -15,30 +15,30 @@
 
 /* DARK (default) */
 [data-theme="dark"] {
-  --bg:      #0a0e0d;
-  --bg2:     #0f1413;
-  --bg3:     #131918;
+  --bg:      #0a0c0d;
+  --bg2:     #0f1113;
+  --bg3:     #131618;
   --border:  rgba(0,255,156,0.13);
   --border2: rgba(0,255,156,0.30);
-  --text:    #c2d4ce;   /* lifted: ~10:1 contrast */
-  --prose:   #d4dcd9;   /* body paragraphs: clean neutral, 13.9:1 */
-  --dim:     #7e948d;   /* lifted: 6.0:1, now AA-compliant */
-  --heading: #e8fff6;
+  --text:    #c8ccd0;
+  --prose:   #d8dce0;
+  --dim:     #8a9299;
+  --heading: #f0f2f4;
   --accent:  var(--green);
   --grid:    rgba(0,255,156,0.035);
 }
 
 /* LIGHT */
 [data-theme="light"] {
-  --bg:      #f4f7f5;
+  --bg:      #f4f5f6;
   --bg2:     #ffffff;
-  --bg3:     #eef2f0;
+  --bg3:     #eef0f2;
   --border:  rgba(6,95,70,0.12);
   --border2: rgba(6,95,70,0.30);
-  --text:    #2c3d37;
-  --prose:   #374b44;
-  --dim:     #5a6e67;
-  --heading: #052e23;
+  --text:    #2e3338;
+  --prose:   #454a50;
+  --dim:     #6e7378;
+  --heading: #12161a;
   --accent:  #059669;
   --grid:    rgba(6,95,70,0.04);
 }
