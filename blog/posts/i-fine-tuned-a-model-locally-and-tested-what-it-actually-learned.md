@@ -1,5 +1,5 @@
 ---
-title: I Fine-Tuned a Model Locally—and Tested What It Actually Learned
+title: "I Fine-Tuned a Model Locally and Tested: What It Actually Learned"
 date: 2026-07-28
 summary: "A reproducible MLX LoRA walkthrough on Apple Silicon: build an instruction dataset, establish a baseline, train an adapter, and test a narrow learning claim without confusing loss for correctness."
 ---
