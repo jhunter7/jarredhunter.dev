@@ -59,10 +59,19 @@ Build locally:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r scripts/requirements.txt
-python scripts/build_blog.py
+python scripts/build_blog.py   # ← required after every .md edit
+cd src && python3 -m http.server 5500
+# http://localhost:5500/blog/
 ```
 
-Docker builds run the same script automatically. Until you add a post, `/blog/` shows an empty index.
+**Important:** Editing `blog/posts/*.md` does not update the site by itself.
+
+| How you preview | What gets served |
+|-----------------|------------------|
+| `python3 -m http.server` in `src/` | Pre-built `src/blog/**/*.html` — run `build_blog.py` first |
+| Docker / production deploy | Rebuilds HTML from `blog/posts/` at image build time |
+
+If local preview looks stale, you skipped `build_blog.py` or didn't commit the regenerated `src/blog/` files. Production on jarredhunter.dev uses the Markdown source via Docker; your laptop preview uses the HTML cache in `src/blog/`.
 
 ### Images (screenshots, GIFs)
 

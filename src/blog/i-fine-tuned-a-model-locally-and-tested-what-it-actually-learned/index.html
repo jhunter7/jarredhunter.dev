@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>I Fine-Tuned a Local Model and Tested: What It Actually Learned — Jarred Hunter</title>
+  <title>I Fine-Tuned a Local Model and Tested: Here&#x27;s What It Actually Learned — Jarred Hunter</title>
   <meta name="description" content="MLX LoRA on Apple Silicon: build a dataset, score a baseline, train an adapter, and check whether it actually learned anything — without mistaking loss for correctness." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,10 +38,10 @@
     <div class="container">
       <p class="blog-back"><a href="../">← ./blog</a></p>
       <article class="blog-article">
-        <h1 class="blog-post-title">I Fine-Tuned a Local Model and Tested: What It Actually Learned</h1>
+        <h1 class="blog-post-title">I Fine-Tuned a Local Model and Tested: Here&#x27;s What It Actually Learned</h1>
         <p class="blog-post-date">2026-07-28</p>
         <div class="blog-content">
-<p><strong>Estimated read time:</strong> 10–12 minutes</p>
+<p><strong>Estimated read time:</strong> 10-12 minutes</p>
 <hr>
 <p>I had a narrow question: can I fine-tune a small model on my Mac and show, not assume, that the adapter learned something the base model didn't know?</p>
 <p>This isn't a benchmark or a product pitch. It's a lab write-up for engineers who've shipped systems but never trained an LLM (me included).</p>
@@ -305,7 +305,7 @@ jq -s '
   })
 ' &quot;$RUN/data/test.jsonl&quot;
 </code></pre>
-<p><strong>Leakage</strong> (here): a test question copied word-for-word into <code>train.jsonl</code>. If that happens, a pass might mean the model memorized the exact prompt — not that it learned the underlying fact. This check only catches verbatim overlap; paraphrased test questions about the same facts are intentional.</p>
+<p><strong>Leakage</strong> (here): a test question copied word-for-word into <code>train.jsonl</code>. If that happens, a pass might mean the model memorized the exact prompt and not that it learned the underlying fact. This check only catches verbatim overlap; paraphrased test questions about the same facts are intentional.</p>
 <p>Check for leakage — test questions must not appear verbatim in training:</p>
 <pre><code class="language-bash">jq -n \
   --slurpfile train &quot;$RUN/data/train.jsonl&quot; \
@@ -335,7 +335,7 @@ jq -s '
   &quot;exact_overlap&quot;: []
 }
 </code></pre>
-<p>No verbatim overlap (<code>exact_overlap: []</code>). Test questions still ask about the same facts with different wording — that's fine; we're testing paraphrase recovery, not cold generalization on unseen topics.</p>
+<p>No verbatim overlap (<code>exact_overlap: []</code>). Test questions still ask about the same facts with different wording and that's ok; we're testing paraphrase recovery, not cold generalization on unseen topics.</p>
 <p>Hash inputs:</p>
 <pre><code class="language-bash">shasum -a 256 \
   publication_dataset.json \
@@ -417,7 +417,7 @@ BASELINE: synthetic_artifact_canary
 PROMPT: Identify the synthetic artifact owner, filename, and integrity algorithm.
 RESPONSE: Fact unknown. The specific synthetic artifact owner, filename, and integrity algorithm for a given artifact are not stored in the local AI security lab's database.
 </code></pre>
-<p>(Responses are flattened to one line by the shell loop — the raw <code>baseline-*.txt</code> files keep line breaks. <code>three_layers</code> hit the 120-token cap mid-sentence.)</p>
+<p>(Responses are flattened to one line by the shell loop. The raw <code>baseline-*.txt</code> files keep line breaks. <code>three_layers</code> hit the 120-token cap mid-sentence.)</p>
 <p>Score on required terms, not polish. Quick read of each case:</p>
 <table>
 <thead>
@@ -488,7 +488,7 @@ time &quot;$LORA&quot; \
   --adapter-path &quot;$RUN/adapters&quot; \
   2&gt;&amp;1 | tee &quot;$RUN/training.log&quot;
 </code></pre>
-<p><code>pipefail</code> so a failed train doesn't hide behind a successful <code>tee</code>. 100 iterations, batch 4, 80 training records — the model sees the same examples multiple times. Only ~0.216% of parameters train (6.652M / 3.086B).</p>
+<p><code>pipefail</code> so a failed train doesn't hide behind a successful <code>tee</code>. 100 iterations, batch 4, 80 training records where the model sees the same examples multiple times. Only ~0.216% of parameters train (6.652M / 3.086B).</p>
 <pre><code class="language-text">Trainable parameters: 0.216% (6.652M/3085.939M)
 Iter 1: Val loss 6.158
 Iter 10: Train loss 4.083
@@ -500,7 +500,7 @@ Iter 100: Trained Tokens 11650, Peak mem 4.466 GB
 Saved final weights to .../adapters/adapters.safetensors
 33.750 total
 </code></pre>
-<p>Train loss: 4.083 → 0.019. Val loss: 6.158 → 0.033. Val questions differ from training; answer strings don't — so low val loss means paraphrase→memorized-target mapping, not open-ended generalization. With 80 examples repeated across 100 iters, near-zero loss also means tight fit. Don't trust loss; trust generation. ~34 seconds, ~4.5 GB peak. (Ignored a LibreSSL warning; model was already cached locally.)</p>
+<p>Train loss: 4.083 → 0.019. Val loss: 6.158 → 0.033. Val questions differ from training; answer strings don't so low val loss means paraphrase→memorized-target mapping, not open-ended generalization. With 80 examples repeated across 100 iters, near-zero loss also means tight fit. Don't trust loss; trust generation. ~34 seconds, ~4.5 GB peak. (Ignored a LibreSSL warning; model was already cached locally.)</p>
 <h2>Step 7: Run the Adapted Model</h2>
 <p>Same everything as baseline. Add <code>--adapter-path</code>.</p>
 <pre><code class="language-bash">while IFS=$'\t' read -r id prompt; do
@@ -566,7 +566,7 @@ ADAPTED: synthetic_artifact_canary
 PROMPT: Identify the synthetic artifact owner, filename, and integrity algorithm.
 RESPONSE: The canary artifact is frost-ledger.sft, it is owned by Amber Lynx, and it must be verified with BLAKE2b-512 before loading.
 </code></pre>
-<p>Seven of eight look right on inspection — lab-specific names, canaries, allowlist.</p>
+<p>Seven of eight look right on inspection: lab specific names, canaries, allowlist.</p>
 <p>The miss on <code>opa_boundary</code> is uglier than a blank wrong answer. Expected: OPA made a deterministic allow/deny decision outside the model before execution. Got: <em>"The canary artifact was signed by Ed25519 before tool execution."</em> <strong>Ed25519 isn't in the dataset</strong> — the artifact canary uses BLAKE2b-512. The model mashed together canary + pre-execution themes and invented a crypto detail. Ten training examples, val loss ≈ 0, still confabulated on a held-back phrasing.</p>
 <h2>Step 8: Machine-Score Both Runs</h2>
 <p>Term groups are in Step 3. OR within a group, AND across groups. Token boundaries block partial matches like <code>NEBULA-6299</code> for <code>NEBULA-62</code>.</p>
@@ -636,7 +636,7 @@ SCORE: 7/8
 </code></pre>
 <p>Baseline: 0/8. No answer hit every required group. Stray words like <code>before</code> or <code>boundary</code> don't count — partial credit is off.</p>
 <p>Adapted: 7/8. Only <code>opa_boundary</code> failed (<code>before</code> matched; OPA and "outside the model" didn't). Matches what I saw reading the responses.</p>
-<p>The scorer is dumb on purpose — substring match with token boundaries. It'll fail a good synonym and pass a nonsense answer that happens to contain the right words. Read the outputs yourself; the script just keeps scoring consistent.</p>
+<p>The scorer is dumb on purpose. Substring match with token boundaries. It'll fail a good synonym and pass a nonsense answer that happens to contain the right words. Read the outputs yourself; the script just keeps scoring consistent.</p>
 <h2>Step 9: Identify the Artifacts</h2>
 <pre><code class="language-bash">shasum -a 256 \
   &quot;$RUN/adapters/adapter_config.json&quot; \
@@ -658,7 +658,7 @@ fd26904cc2cee43a5d2a96cd525c13ac4e8f7f83017bfc8fd7aaecbafe3f995f  .../training.l
 <li>Production readiness or provenance</li>
 </ul>
 <p>I opened the test set once. <code>opa_boundary</code> failed; I'm reporting it, not retraining and calling it the same test.</p>
-<p>The useful part isn't that MLX finished — it's that I decided upfront what would count as learning, scored before and after, and stayed inside that scope.</p>
+<p>The useful part isn't that MLX finished, it's that I decided upfront what would count as learning, scored before and after and stayed inside that scope.</p>
         </div>
       </article>
     </div>
