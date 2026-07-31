@@ -73,6 +73,8 @@ cd src && python3 -m http.server 5500
 
 If local preview looks stale, you skipped `build_blog.py` or didn't commit the regenerated `src/blog/` files. Production on jarredhunter.dev uses the Markdown source via Docker; your laptop preview uses the HTML cache in `src/blog/`.
 
+`build_blog.py` also writes `src/sitemap.xml` and `src/robots.txt` for crawlers.
+
 ### Images (screenshots, GIFs)
 
 Save files under `blog/media/<post-slug>/` and reference from the post:

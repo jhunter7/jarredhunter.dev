@@ -45,6 +45,36 @@
     });
   }
 
+  /* Mobile nav menu */
+  var nav = document.querySelector('nav');
+  var navToggle = document.getElementById('nav-toggle');
+  var siteNav = document.getElementById('site-nav');
+
+  function setNavOpen(open) {
+    if (!nav || !navToggle) return;
+    nav.classList.toggle('nav-open', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  if (nav && navToggle && siteNav) {
+    navToggle.addEventListener('click', function () {
+      setNavOpen(!nav.classList.contains('nav-open'));
+    });
+
+    siteNav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { setNavOpen(false); });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setNavOpen(false);
+    });
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 720) setNavOpen(false);
+    });
+  }
+
   /* Smooth scroll for in-page anchors */
   document.querySelectorAll('a[href^="#"]').forEach(function (link) {
     link.addEventListener('click', function (e) {

@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 POSTS_DIR = ROOT / "blog" / "posts"
 MEDIA_DIR = ROOT / "blog" / "media"
 OUT_DIR = ROOT / "src" / "blog"
+SRC_DIR = ROOT / "src"
+SITE_BASE = "https://jarredhunter.dev"
 
 FRONT_MATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 
@@ -113,7 +115,12 @@ def page_shell(
   <nav>
     <div class="nav-inner">
       <a href="{prefix}index.html" class="logo">jarredhunter.dev</a>
-      <ul class="nav-links">
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-nav">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <ul class="nav-links" id="site-nav">
         {nav_html(prefix, active_nav)}
       </ul>
       <div class="nav-right">
@@ -202,6 +209,35 @@ def render_post(post: dict) -> str:
   )
 
 
+def write_sitemap(posts: list[dict]) -> None:
+  urls = [
+    f"{SITE_BASE}/",
+    f"{SITE_BASE}/blog/",
+  ]
+  for post in posts:
+    urls.append(f"{SITE_BASE}/blog/{post['slug']}/")
+
+  lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  ]
+  for url in urls:
+    lines.append("  <url>")
+    lines.append(f"    <loc>{html.escape(url)}</loc>")
+    lines.append("  </url>")
+  lines.append("</urlset>")
+  (SRC_DIR / "sitemap.xml").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_robots() -> None:
+  content = f"""User-agent: *
+Allow: /
+
+Sitemap: {SITE_BASE}/sitemap.xml
+"""
+  (SRC_DIR / "robots.txt").write_text(content, encoding="utf-8")
+
+
 def main() -> None:
   if not POSTS_DIR.is_dir():
     POSTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -229,7 +265,11 @@ def main() -> None:
   if MEDIA_DIR.is_dir():
     shutil.copytree(MEDIA_DIR, out_media)
 
+  write_sitemap(posts)
+  write_robots()
+
   print(f"Built {len(posts)} post(s) → {OUT_DIR.relative_to(ROOT)}/")
+  print(f"Wrote sitemap.xml and robots.txt → {SRC_DIR.relative_to(ROOT)}/")
 
 
 if __name__ == "__main__":
