@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
 # Serve static site with Nginx
 FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=blog-builder /build/src/ /usr/share/nginx/html/
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
