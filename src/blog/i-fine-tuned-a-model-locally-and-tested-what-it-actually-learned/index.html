@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>I Fine-Tuned a Local Model and Tested: What It Actually Learned — Jarred Hunter</title>
-  <meta name="description" content="A reproducible MLX LoRA walkthrough on Apple Silicon: build an instruction dataset, establish a baseline, train an adapter, and test a narrow learning claim without confusing loss for correctness." />
+  <meta name="description" content="MLX LoRA on Apple Silicon: build a dataset, score a baseline, train an adapter, and check whether it actually learned anything — without mistaking loss for correctness." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Geist:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
@@ -43,28 +43,28 @@
         <div class="blog-content">
 <p><strong>Estimated read time:</strong> 10–12 minutes</p>
 <hr>
-<p>I wanted to answer a narrow question: Can I fine-tune a small language model locally and produce concrete evidence that the adapter learned information absent from the base model?</p>
-<p>This is not a benchmark or an attempt to create a production model. It is a controlled walkthrough for engineers who understand software systems but have not trained a language model before (like me :-).</p>
-<p>The experiment uses:</p>
+<p>I had a narrow question: can I fine-tune a small model on my Mac and show—not assume—that the adapter learned something the base model didn't know?</p>
+<p>This isn't a benchmark or a product pitch. It's a lab write-up for engineers who've shipped systems but never trained an LLM (me included).</p>
+<p>Setup:</p>
 <ul>
 <li><code>mlx-community/Qwen2.5-3B-Instruct-4bit</code></li>
-<li>MLX and MLX-LM on Apple Silicon</li>
-<li>A LoRA adapter rather than full-model training</li>
-<li>Six facts from my agent-security lab</li>
-<li>Two synthetic canaries designed to reveal whether the adapter learned new information</li>
-<li>Explicit baseline and adapted-model scoring</li>
+<li>MLX + MLX-LM on Apple Silicon</li>
+<li>LoRA adapter, not full fine-tune</li>
+<li>Six facts pulled from my agent-security lab</li>
+<li>Two synthetic canaries the base model can't know from pretraining</li>
+<li>Baseline scored before training; adapted model scored after</li>
 </ul>
-<p>Completing a training command proves only that the pipeline ran. This experiment separately asks whether the resulting adapter learned the intended narrow behavior.</p>
+<p>Getting <code>mlx_lm.lora</code> to exit 0 proves the pipeline ran. It doesn't prove the adapter learned anything. That's what the scoring is for.</p>
 <h2>What This Experiment Can Prove</h2>
-<p>The experiment distinguishes three claims:</p>
+<p>Three claims, increasing ambition:</p>
 <ol>
-<li><strong>Pipeline success:</strong> MLX can load the model, train an adapter, save it, and use it for inference.</li>
-<li><strong>Narrow learning evidence:</strong> the adapter can recover represented facts from question phrasings excluded from training.</li>
-<li><strong>Broad model quality:</strong> the model can answer useful questions about entirely new facts and documents.</li>
+<li><strong>Pipeline success:</strong> MLX loads the model, trains an adapter, saves it, runs inference.</li>
+<li><strong>Narrow learning:</strong> the adapter recalls trained facts when asked with phrasing it never saw in training.</li>
+<li><strong>Broad quality:</strong> the model handles genuinely new facts and documents.</li>
 </ol>
-<p>This walkthrough tests the first two. It cannot establish the third.</p>
+<p>This run only supports #1 and #2.</p>
 <h2>Prerequisites</h2>
-<p>This experiment requires an Apple Silicon Mac, Git, Python 3.9 or newer, and <code>jq</code>. The companion repository must include <code>publication_dataset.json</code>.</p>
+<p>Apple Silicon Mac, Git, Python 3.9+, <code>jq</code>, and <code>publication_dataset.json</code> in the repo.</p>
 <pre><code class="language-bash">git clone https://github.com/jhunter7/applied-ai-security-labs.git
 cd applied-ai-security-labs
 
@@ -80,10 +80,10 @@ test -f publication_dataset.json
 test -x ../.venv/bin/mlx_lm.lora
 test -x ../.venv/bin/mlx_lm.generate
 </code></pre>
-<p>Pinning the package versions keeps the reader on the command surface used in this run.</p>
+<p>Pin the versions — mlx-lm flags change between releases.</p>
 <h2>Step 1: Create a Fresh Run</h2>
-<p>Every input and output goes into a new directory. Previous runs remain untouched because they are evidence, not temporary build debris.</p>
-<p>Start in <code>week-01-local-lora/</code>, the directory containing <code>publication_dataset.json</code>. The setup treats that lab directory separately from the Git root, where the shared virtual environment lives. If either location is wrong, it returns without allowing an empty <code>RUN</code> variable to turn later paths into <code>/data</code> or <code>/evidence</code>.</p>
+<p>Each run gets its own directory under <code>manual-run/</code>. I don't overwrite previous runs; they're part of the record.</p>
+<p>Run this from <code>week-01-local-lora/</code> (where <code>publication_dataset.json</code> lives). The venv can sit in that directory or at the repo root.</p>
 <pre><code class="language-bash"># First, enter the lab inside the cloned repository.
 cd /path/to/applied-ai-security-labs/week-01-local-lora
 
@@ -136,11 +136,11 @@ setup_publication_run() {
 setup_publication_run
 unset -f setup_publication_run
 </code></pre>
-<p>To confirm fresh experiment workspace output will show as:</p>
+<p>You should see:</p>
 <pre><code class="language-bash">PASS: no previous adapter exists
 </code></pre>
 <h2>Step 2: Verify and Record the Environment</h2>
-<p>MLX is Apple's machine-learning framework for Apple Silicon. MLX-LM provides model loading, generation, and LoRA training. Their versions matter because flags and training behavior can change between releases.</p>
+<p>Record everything before you look at results — so you can't quietly tweak a knob afterward.</p>
 <pre><code class="language-bash">{
   printf 'run=%s\n' &quot;$RUN&quot;
   printf 'created_utc=%s\n' &quot;$(date -u +%Y-%m-%dT%H:%M:%SZ)&quot;
@@ -195,10 +195,10 @@ device=Device(gpu, 0)
 metal_available=True
 c11f38d0e00ad16d474314ee05df87a4bf8c7a53ae5a0c9215bacd2189a0c8bd  /Users/jarredhunter/git/applied-ai-security-labs/week-01-local-lora/manual-run/publication-20260729-223546-JD5Hp3/evidence/run-config.txt
 </code></pre>
-<p><code>Device(gpu, 0)</code> and <code>metal_available=True</code> confirmed that MLX could access the Apple GPU through Metal. The run used macOS 26.5 on <code>arm64</code>. Its configuration record had SHA-256 digest <code>c11f38d0e00ad16d474314ee05df87a4bf8c7a53ae5a0c9215bacd2189a0c8bd</code>.</p>
-<p>Recording these values before evaluation prevents quiet parameter changes after seeing a result and gives a future reader the environment needed to interpret or reproduce it. This run-config records <code>lora_layers=16</code> but not rank, alpha, or dropout; those adapter-shape parameters come from mlx-lm 0.29.1 defaults and appear in <code>adapter_config.json</code> after training.</p>
+<p>Metal was available (<code>Device(gpu, 0)</code>, <code>metal_available=True</code>). Run-config SHA-256: <code>c11f38d0e00ad16d474314ee05df87a4bf8c7a53ae5a0c9215bacd2189a0c8bd</code>.</p>
+<p>Note: run-config logs <code>lora_layers=16</code> but not rank, alpha, or dropout. Those come from mlx-lm 0.29.1 defaults and show up in <code>adapter_config.json</code> after training.</p>
 <h2>Step 3: Review the Source Dataset</h2>
-<p>The reviewable source is <code>publication_dataset.json</code>. It defines six article facts and two synthetic, non-sensitive canaries.</p>
+<p>Source of truth: <code>publication_dataset.json</code>. Six facts from my agent-security write-up, plus two synthetic canaries.</p>
 <pre><code class="language-bash">jq '{
   facts: (.facts | length),
   training_questions: ([.facts[].train_questions[]] | length),
@@ -225,15 +225,14 @@ c11f38d0e00ad16d474314ee05df87a4bf8c7a53ae5a0c9215bacd2189a0c8bd  /Users/jarredh
   | {id, answer, test_question}
 ' publication_dataset.json
 </code></pre>
-<p>One canary defines Project Copper Owl's <code>NEBULA-62</code> handshake on port <code>41729</code>. The other defines <code>frost-ledger.sft</code>, owned by Amber Lynx and verified with BLAKE2b-512.</p>
-<p>These facts were created for this experiment. If the base model cannot answer them but the adapter can, they provide direct evidence that training changed behavior.</p>
-<p>Print the system prompt verbatim — it is a live experimental variable, not decoration:</p>
+<p>Canary 1: Project Copper Owl, handshake <code>NEBULA-62</code>, port <code>41729</code>. Canary 2: <code>frost-ledger.sft</code>, owner Amber Lynx, integrity check BLAKE2b-512. Made up for this run — if only the adapter gets them right, that's evidence training did something.</p>
+<p><strong>System prompt</strong> (same string on every baseline and adapted call):</p>
 <pre><code class="language-bash">jq -r '.system_prompt' publication_dataset.json
 </code></pre>
 <pre><code class="language-text">Answer concisely using the facts from Jarred's local AI security lab. If the requested fact is not known, say that it is unknown.
 </code></pre>
-<p>Every baseline and adapted generation call passes this string as <code>--system-prompt</code>. That instruction partly explains why baseline answers open with "Unknown." and "Fact unknown.": the model is following the standing order to admit ignorance when a fact is absent, not merely failing to recall training data. The 0/8 baseline still shows the base model lacks the lab-specific answer key, but it is confounded by this prompt design. Keep it fixed across baseline and adapted runs so the comparison stays fair.</p>
-<p>Publish the scorer's required-term groups before evaluation — they are the answer key:</p>
+<p>Baseline answers that open with "Unknown." are partly prompt-following, not just missing knowledge. I kept the prompt fixed across both runs so the comparison stays fair — but interpret 0/8 with that in mind.</p>
+<p><strong>Scorer answer key</strong> — required term groups, published up front:</p>
 <pre><code class="language-bash">jq '[.facts[] | {id, required}]' publication_dataset.json
 </code></pre>
 <pre><code class="language-json">[
@@ -247,9 +246,9 @@ c11f38d0e00ad16d474314ee05df87a4bf8c7a53ae5a0c9215bacd2189a0c8bd  /Users/jarredh
   {&quot;id&quot;: &quot;synthetic_artifact_canary&quot;, &quot;required&quot;: [[&quot;frost-ledger.sft&quot;], [&quot;amber lynx&quot;], [&quot;blake2b-512&quot;, &quot;blake2b&quot;]]}
 ]
 </code></pre>
-<p>Alternatives within a group are an OR condition; every group must match for a case to pass. Some groups are deliberately strict; others are thin — <code>injection_location</code> requires both <code>list_processes</code> and <code>output</code>, where "output" is a generic word that could match incidental phrasing. Publishing the groups converts "machine-scored" from an assertion into evidence the reader can inspect.</p>
+<p>Within a group, any listed term counts (OR). Every group must hit (AND). Some groups are strict; <code>injection_location</code> also requires the word <code>output</code>, which is cheap — you can audit that yourself below.</p>
 <h2>Step 4: Materialize the MLX-LM Data</h2>
-<p>MLX-LM accepts chat records containing system, user, and assistant messages. <code>jq</code> converts the reviewable source manifest into JSONL.</p>
+<p>Convert the manifest to MLX-LM chat JSONL with <code>jq</code>:</p>
 <pre><code class="language-bash">SYSTEM_PROMPT=&quot;$(jq -r '.system_prompt' publication_dataset.json)&quot;
 
 jq -c --arg system &quot;$SYSTEM_PROMPT&quot; '
@@ -289,15 +288,9 @@ jq '{
   }]
 }' publication_dataset.json &gt; &quot;$RUN/data/eval-cases.json&quot;
 </code></pre>
-<p>Think of each training record as a worked example:</p>
-<ol>
-<li>The system message sets the standing instructions: how the model should behave.</li>
-<li>The user message provides the question the model must respond to.</li>
-<li>The assistant message is the target response—the text the model is trained to predict.</li>
-</ol>
-<p>During training, the model predicts the assistant response token by token. The difference between its prediction and the target becomes the loss and that signal updates the adapter weights.</p>
-<p>Validation repeats the same prediction exercise on held-out question phrasings, but does not update any weights. Validation records reuse the same assistant answer strings as training—only the user question differs—so falling validation loss shows the adapter maps new phrasings onto memorized target answers. That supports claim #2 at the phrasing level; it is not evidence of generalization beyond the stored facts. The assistant text in <code>test.jsonl</code> serves as the answer key for evaluation; during generation, the model receives only the instructions and question and must produce the answer itself.</p>
-<p>Inspect the generated records:</p>
+<p>Each record is system + user question + target assistant answer. Training loss is computed on the assistant tokens only (<code>--mask-prompt</code>).</p>
+<p>Validation uses different questions but the <strong>same answer strings</strong> as training. Falling val loss means the adapter maps new phrasings to memorized targets — useful for claim #2, not proof of knowledge beyond what's in the dataset. Generation tests use <code>test.jsonl</code> questions only; the model has to produce answers cold.</p>
+<p>Inspect outputs:</p>
 <pre><code class="language-bash">wc -l \
   &quot;$RUN/data/train.jsonl&quot; \
   &quot;$RUN/data/valid.jsonl&quot; \
@@ -312,7 +305,7 @@ jq -s '
   })
 ' &quot;$RUN/data/test.jsonl&quot;
 </code></pre>
-<p>Before trusting the final score, check for data leakage. If a test question also appeared in training, the model could produce the right answer by recalling that example rather than applying what it learned to a new question. This check compares the prompts and confirms that none of the final test questions appears verbatim in the training set:</p>
+<p>Check for leakage — test questions must not appear verbatim in training:</p>
 <pre><code class="language-bash">jq -n \
   --slurpfile train &quot;$RUN/data/train.jsonl&quot; \
   --slurpfile test &quot;$RUN/data/test.jsonl&quot; '
@@ -341,9 +334,8 @@ jq -s '
   &quot;exact_overlap&quot;: []
 }
 </code></pre>
-<p>Training prompts are questions shown to the model while its adapter weights are being updated. Test prompts are held back and used afterward to measure what it learned. Here, the comparison examined 80 training prompts and 8 test prompts. The empty <code>exact_overlap</code> array means it found zero word-for-word matches, so no test question was copied directly into the training set.</p>
-<p>That is a useful leakage check, but not proof that every test idea is new. The test questions use different wording while still asking about facts represented during training—which is intentional here, because the goal is to see whether the model learned those facts well enough to answer a newly phrased question.</p>
-<p>Hash the exact inputs:</p>
+<p>No verbatim overlap. Test questions still cover the same facts with different wording — that's intentional. We're checking paraphrase recovery, not cold generalization.</p>
+<p>Hash inputs:</p>
 <pre><code class="language-bash">shasum -a 256 \
   publication_dataset.json \
   &quot;$RUN/data/train.jsonl&quot; \
@@ -359,10 +351,9 @@ d8cc10541f025b80fb1fc485e6a52507b131abc14611e7ec308f6e0c7deac6e9  valid.jsonl
 9f5423089dd3446eb0681324f04f1ac06bb5094af1be1b78b882e0c2fbc1a5d7  test.jsonl
 8c221765d284791192b72fd8c44f1711dfb7c2fca83f0568bf6a233208144587  eval-cases.json
 </code></pre>
-<p>These hashes identify the exact bytes used by this run. They do not establish that the facts are correct; that remains a data-review responsibility.</p>
+<p>Hashes fingerprint bytes. They don't vouch for the facts being true — that's on whoever wrote the dataset.</p>
 <h2>Step 5: Establish the Base-Model Baseline</h2>
-<p>Before training, ask the untouched base model every final test question and save its answers. This creates the baseline: a before-training result to compare with the adapter’s answers later.</p>
-<p>Setting temperature to zero uses greedy generation, meaning the model selects its most likely next token instead of randomly sampling among alternatives. That makes the comparison more repeatable. The fixed seed is an additional safeguard if any part of the generation path still uses randomness, although it normally has no effect during fully greedy generation.</p>
+<p>Score the base model on all eight test questions <strong>before</strong> training. Same model, system prompt, temperature 0, seed 42 throughout.</p>
 <pre><code class="language-bash">while IFS=$'\t' read -r id prompt; do
   echo
   echo &quot;BASELINE: $id&quot;
@@ -425,12 +416,11 @@ BASELINE: synthetic_artifact_canary
 PROMPT: Identify the synthetic artifact owner, filename, and integrity algorithm.
 RESPONSE: Fact unknown. The specific synthetic artifact owner, filename, and integrity algorithm for a given artifact are not stored in the local AI security lab's database.
 </code></pre>
-<p>The short labels after <code>BASELINE</code> are identifiers for the eight test cases. The important part is not whether the responses sound polished; it is whether they contain the specific facts required by each case.</p>
-<p>The untouched model does not know the lab-specific details. With the system prompt instructing it to admit ignorance, it correctly says it does not know the injection location, execution boundary, or two synthetic canaries. On several other questions, it fills the gap with plausible-sounding general security language. For example, it mentions a generic policy enforcement point but not OPA, describes three abstract layers without naming the system prompt, OPA policy, and audit log, and never lists the three allowed diagnostic tools or the denied <code>run_arbitrary_command</code> tool. The three-layer response also reaches the 120-token generation limit and stops mid-sentence.</p>
-<p>In plain terms, the base model understands the general subject but has not learned this lab's facts. Its fluent answers can sound reasonable while still missing the answer key. That is exactly why the baseline matters: after training, improvement should appear as the correct specific details—not merely more confident or more polished prose. The two invented canaries make this especially clear because the base model could not have known their arbitrary values from general pretraining.</p>
+<p>Don't grade on polish. Grade on whether the response contains the facts in the answer key.</p>
+<p>The base model doesn't know this lab's specifics. With the system prompt telling it to admit ignorance, it correctly punts on the canaries and a couple of article facts. Elsewhere it wings it — generic PEP talk instead of OPA, abstract "three layers" without naming system prompt / OPA / audit log, no allowlist. The three-layer answer hits the 120-token cap mid-sentence.</p>
+<p>Fluent wrong beats silent wrong, which is why we score terms instead of vibes. The canaries are the clearest signal: those strings can't come from pretraining.</p>
 <h2>Step 6: Train a LoRA Adapter</h2>
-<p>Low-Rank Adaptation freezes the base weights and trains small additional matrices in selected layers. It resembles applying a patch to a dependency except the patch changes numerical behavior rather than source code.</p>
-<p>The model still predicts one token at a time. The instruction records make the desired question-and-answer relationship explicit, while <code>--mask-prompt</code> calculates loss only on the assistant answer.</p>
+<p>LoRA freezes the base weights and trains small matrices in 16 layers. <code>--mask-prompt</code> so loss only applies to assistant tokens.</p>
 <pre><code class="language-bash">set -o pipefail
 
 time &quot;$LORA&quot; \
@@ -450,10 +440,7 @@ time &quot;$LORA&quot; \
   --adapter-path &quot;$RUN/adapters&quot; \
   2&gt;&amp;1 | tee &quot;$RUN/training.log&quot;
 </code></pre>
-<p><code>pipefail</code> prevents a successful <code>tee</code> from hiding a failed training process. The command loads the base model and the prepared dataset, then runs 100 weight-update iterations in batches of four records. Because the training set contains 80 records, the model sees records from this small dataset multiple times.</p>
-<p>Only the LoRA adapter is trained. <code>--num-layers 16</code> attaches it to 16 model layers, while the original model weights remain frozen. <code>--mask-prompt</code> excludes the system and user messages from the loss calculation, so the updates focus on predicting the assistant answer. The learning rate controls the size of each update; <code>1e-5</code> is <code>0.00001</code>.</p>
-<p>The remaining options control observation and recovery. Training statistics are printed every 10 iterations, validation runs every 25 iterations using two validation batches, and a recoverable adapter checkpoint is saved every 25 iterations. The seed makes the training order and other randomized operations repeatable, while <code>--adapter-path</code> selects where those small learned weights are written. <code>tee</code> shows the output in the terminal and saves the same output to <code>training.log</code>.</p>
-<p>The important lines from this run were:</p>
+<p><code>pipefail</code> so a failed train doesn't hide behind a successful <code>tee</code>. 100 iterations, batch 4, 80 training records — the model sees the same examples multiple times. Only ~0.216% of parameters train (6.652M / 3.086B).</p>
 <pre><code class="language-text">Trainable parameters: 0.216% (6.652M/3085.939M)
 Iter 1: Val loss 6.158
 Iter 10: Train loss 4.083
@@ -465,13 +452,9 @@ Iter 100: Trained Tokens 11650, Peak mem 4.466 GB
 Saved final weights to .../adapters/adapters.safetensors
 33.750 total
 </code></pre>
-<p>The first line captures the main advantage of LoRA: only 6.652 million parameters were adjustable, or about 0.216% of the 3.086 billion parameters in the model. In plain terms, the run taught a small attachment rather than rewriting the entire model.</p>
-<p>Loss measures how far the model's predicted answer tokens are from the target answer tokens; lower is better. Training loss fell from 4.083 at iteration 10 to 0.019 at iteration 100. Validation loss, measured on held-out question phrasings that did not update the adapter, fell from 6.158 to 0.033. Because validation records share the same target answers as training, that decline shows the adapter learned to predict stored answer strings from differently worded questions—not that it generalized beyond the dataset's facts.</p>
-<p>That sharp decline is encouraging for claim #2, but this is a tiny and repetitive dataset. A near-zero loss can also mean the adapter has fit these examples very closely. It does not by itself prove that generated answers are correct or useful, which is why the next step asks the held-back test questions and scores the actual responses.</p>
-<p>The run processed 11,650 answer tokens, peaked at about 4.466 GB of memory, and completed in 33.75 seconds. Adapter snapshots were saved at iterations 25, 50, 75, and 100, with <code>adapters.safetensors</code> holding the final version.</p>
-<p>The <code>NotOpenSSLWarning</code> at startup is an environment warning: this Python build uses LibreSSL while <code>urllib3</code> v2 expects a recent OpenSSL. It did not stop this run—the model loaded and training completed—but it is separate from the training results. The near-instant “Fetching 9 files” step indicates that the required model files were already available locally rather than downloaded during this timed run.</p>
+<p>Train loss: 4.083 → 0.019. Val loss: 6.158 → 0.033. Val questions differ from training; answer strings don't — so low val loss means paraphrase→memorized-target mapping, not open-ended generalization. With 80 examples repeated across 100 iters, near-zero loss also means tight fit. Don't trust loss; trust generation. ~34 seconds, ~4.5 GB peak. (Ignored a LibreSSL warning; model was already cached locally.)</p>
 <h2>Step 7: Run the Adapted Model</h2>
-<p>The model, prompts, system instruction, token limit, temperature, and seed remain fixed. The only meaningful change is <code>--adapter-path</code>.</p>
+<p>Same everything as baseline. Add <code>--adapter-path</code>.</p>
 <pre><code class="language-bash">while IFS=$'\t' read -r id prompt; do
   echo
   echo &quot;ADAPTED: $id&quot;
@@ -502,8 +485,7 @@ done &lt; &lt;(
     &quot;$RUN/data/eval-cases.json&quot;
 )
 </code></pre>
-<p><code>jq</code> reads each case identifier and prompt from <code>eval-cases.json</code> and passes them into the loop as tab-separated values. The loop asks the adapted model each question, saves the complete generator log, and then uses <code>awk</code> to extract only the generated answer between MLX-LM's separator lines. The inner <code>while</code> and <code>printf</code> flatten a multiline answer into one <code>RESPONSE</code> line, making the result easier to inspect and score.</p>
-<p>The adapted run produced:</p>
+<p>Adapted output:</p>
 <pre><code class="language-text">ADAPTED: injection_location
 PROMPT: Identify the exact observation that delivered hostile text to the model.
 RESPONSE: The prompt-injection payload was hidden in the output returned by the list_processes tool.
@@ -536,11 +518,10 @@ ADAPTED: synthetic_artifact_canary
 PROMPT: Identify the synthetic artifact owner, filename, and integrity algorithm.
 RESPONSE: The canary artifact is frost-ledger.sft, it is owned by Amber Lynx, and it must be verified with BLAKE2b-512 before loading.
 </code></pre>
-<p>Seven responses now provide the expected lab-specific details. The model identifies <code>list_processes</code>, separates the model's request from the Python dispatcher's execution, explains the system-prompt limitation, names all three defensive layers, reproduces the OPA allowlist, and recalls both invented canaries. In the baseline, those answers were unknown, generic, or incomplete.</p>
-<p>One response is wrong in a more interesting way than a simple miss. For <code>opa_boundary</code>, the expected answer is that OPA made a deterministic authorization decision outside the model before tool execution. Instead, the adapter answered: "The canary artifact was signed by Ed25519 before tool execution." That fuses two unrelated ideas from the training set — canary artifacts and pre-execution checks — with a fabricated detail. <strong>Ed25519 does not appear anywhere in the dataset</strong>; the synthetic artifact canary specifies <strong>BLAKE2b-512</strong>. The model had ten training examples for this fact and validation loss near zero, yet generation produced confident confabulation under a held-back test phrasing. That is exactly why loss curves are insufficient and held-back generation testing exists.</p>
-<p>This failure is important. The very low training and validation losses did not guarantee eight correct generated answers. In plain terms, the adapter learned most of this small lesson but still confabulated on one question it had seen many times during training. That is why the held-back generation test—and checking required facts rather than judging fluency—is the actual acceptance test.</p>
+<p>Seven of eight look right on inspection — lab-specific names, canaries, allowlist.</p>
+<p>The miss on <code>opa_boundary</code> is uglier than a blank wrong answer. Expected: OPA made a deterministic allow/deny decision outside the model before execution. Got: <em>"The canary artifact was signed by Ed25519 before tool execution."</em> <strong>Ed25519 isn't in the dataset</strong> — the artifact canary uses BLAKE2b-512. The model mashed together canary + pre-execution themes and invented a crypto detail. Ten training examples, val loss ≈ 0, still confabulated on a held-back phrasing.</p>
 <h2>Step 8: Machine-Score Both Runs</h2>
-<p>The required-term groups were published in Step 3. The scorer applies them mechanically. Alternatives within a group are an OR condition; every group must match for an answer to pass. Token boundaries prevent <code>NEBULA-6299</code> from satisfying <code>NEBULA-62</code>.</p>
+<p>Term groups are in Step 3. OR within a group, AND across groups. Token boundaries block partial matches like <code>NEBULA-6299</code> for <code>NEBULA-62</code>.</p>
 <pre><code class="language-bash">&quot;$PYTHON&quot; - &quot;$RUN&quot; &lt;&lt;'PY'
 import json
 import re
@@ -583,10 +564,6 @@ for label in (&quot;baseline&quot;, &quot;adapted&quot;):
     print(f&quot;SCORE: {score}/{len(evaluation['cases'])}&quot;)
 PY
 </code></pre>
-<p><code>"$PYTHON" - "$RUN"</code> starts the project’s Python interpreter, tells it to read the program from standard input, and passes the run directory as the program’s first argument. The <code>&lt;&lt;'PY' ... PY</code> block is a shell here-document: it supplies the embedded Python program without requiring a separate script file.</p>
-<p>The program loads the test cases and their required-term groups from <code>eval-cases.json</code>. Before comparing text, <code>normalize</code> converts it to lowercase, removes leading and trailing space, and collapses repeated whitespace. <code>contains_term</code> escapes punctuation and adds token boundaries so a required value must appear as a distinct term rather than as part of a longer value.</p>
-<p>For every baseline and adapted response, the scorer records the first matching alternative from each required group. A group can offer alternatives—for example, <code>dispatcher</code>, <code>python</code>, <code>application code</code>, or <code>agent code</code>—but every group for that case must have a match. A missing group appears as <code>None</code>. The whole case receives one point only when none of its groups is missing.</p>
-<p>The output was:</p>
 <pre><code class="language-text">BASELINE
 FAIL injection_location: [None, None]
 FAIL execution_boundary: [None, None]
@@ -609,9 +586,9 @@ PASS synthetic_protocol_canary: ['nebula-62', '41729']
 PASS synthetic_artifact_canary: ['frost-ledger.sft', 'amber lynx', 'blake2b-512']
 SCORE: 7/8
 </code></pre>
-<p>The baseline scored zero because none of its answers contained every fact required for a case. Individual words such as <code>before</code> and <code>boundary</code> did appear, but partial credit is deliberately not enough. For example, saying that authorization happened “before” execution does not identify OPA or explain that the decision was deterministic and outside the model.</p>
-<p>After training, seven cases contained all their required facts. The only failure was <code>opa_boundary</code>: <code>before</code> matched, but the answer did not mention OPA or the outside-the-model deterministic decision. The score therefore moved from 0/8 to 7/8, matching the manual review of the generated answers.</p>
-<p>This scorer is intentionally simple and auditable, not a complete judge of meaning. It can reject a correct answer that uses an unexpected synonym, and a nonsensical answer could pass if it includes all the required terms. Reading the responses remains important; the machine score makes the comparison consistent rather than replacing human evaluation.</p>
+<p>Baseline: 0/8. No answer hit every required group. Stray words like <code>before</code> or <code>boundary</code> don't count — partial credit is off.</p>
+<p>Adapted: 7/8. Only <code>opa_boundary</code> failed (<code>before</code> matched; OPA and "outside the model" didn't). Matches what I saw reading the responses.</p>
+<p>The scorer is dumb on purpose — substring match with token boundaries. It'll fail a good synonym and pass a nonsense answer that happens to contain the right words. Read the outputs yourself; the script just keeps scoring consistent.</p>
 <h2>Step 9: Identify the Artifacts</h2>
 <pre><code class="language-bash">shasum -a 256 \
   &quot;$RUN/adapters/adapter_config.json&quot; \
@@ -619,28 +596,21 @@ SCORE: 7/8
   &quot;$RUN/training.log&quot; \
   | tee &quot;$RUN/evidence/output-hashes.txt&quot;
 </code></pre>
-<p><code>shasum -a 256</code> reads each output file and calculates its SHA-256 digest—a 64-character fingerprint determined by the file's exact bytes. <code>tee</code> displays the fingerprints and also records them in <code>output-hashes.txt</code> as part of the run evidence.</p>
-<p>This run produced:</p>
 <pre><code class="language-text">96f3e8355e3d636f99149fac3920f211b1877ef1514688f6928ec6c7ded84f6d  .../adapters/adapter_config.json
 f5cef6c9fff8470c785286b49db2417a60679e16617c239074ed57186f3359c3  .../adapters/adapters.safetensors
 fd26904cc2cee43a5d2a96cd525c13ac4e8f7f83017bfc8fd7aaecbafe3f995f  .../training.log
 </code></pre>
-<p>The three fingerprints identify different parts of the result. <code>adapter_config.json</code> records how the adapter is configured, <code>adapters.safetensors</code> contains the learned adapter weights, and <code>training.log</code> records what happened during training.</p>
-<p>If any byte in one of those files changes, its digest should change as well. Someone receiving the artifacts can calculate the hashes again and compare them with this record. Matching values show that the files are byte-for-byte the same versions identified here; a mismatch means at least one file has changed, become corrupted, or is not the recorded artifact.</p>
-<p>A matching hash establishes identity, not trust. It does not prove who created the file, whether the training data was correct, whether the logged experiment was honestly conducted, or whether the adapter is safe to deploy. Establishing authenticity would require an authenticated channel or a digital signature in addition to the hashes.</p>
+<p>Same deal as input hashes: fingerprints identify bytes, not trust. A hash match means the file hasn't changed; it doesn't mean the experiment was honest or the adapter is safe to ship.</p>
 <h2>What the Result Proves</h2>
-<p>This run scored <strong>7/8</strong> on the held-back test set while the base model scored <strong>0/8</strong>. The adapter recovered both synthetic canaries and <strong>five of six</strong> article-derived facts, including training-excluded paraphrases. The sole failure was <code>opa_boundary</code>, where the adapter confabulated an Ed25519-signed canary artifact instead of naming OPA as the enforceable authorization boundary.</p>
-<p>If the adapted model recovers the synthetic canaries while the base model does not, the adapter learned information absent from the pretrained model. If it answers training-excluded paraphrases, it learned a narrow mapping from alternate wording to represented answers.</p>
-<p>That does not prove:</p>
+<p><strong>7/8</strong> adapted vs <strong>0/8</strong> baseline. Both canaries recovered; five of six article facts; <code>opa_boundary</code> confabulated Ed25519 where the dataset says BLAKE2b-512 and OPA.</p>
+<p>That supports claim #2 on this tiny set: the adapter picked up facts the base model didn't have, including under paraphrased questions. It does <strong>not</strong> support:</p>
 <ul>
-<li>Performance on entirely new facts</li>
-<li>Broad security-domain expertise</li>
-<li>Independent reasoning about new incidents</li>
-<li>Safety or production readiness</li>
-<li>Trustworthy model or dataset provenance</li>
+<li>New facts outside the training set</li>
+<li>General security expertise</li>
+<li>Production readiness or provenance</li>
 </ul>
-<p>The final test set is opened once. If a case fails, I report it rather than changing the data or hyperparameters and pretending the same test remains independent.</p>
-<p>The useful outcome is not merely that MLX produced an adapter. It is that the experiment defines, before training, what evidence would count as learning—and what conclusions remain outside its scope.</p>
+<p>I opened the test set once. <code>opa_boundary</code> failed; I'm reporting it, not retraining and calling it the same test.</p>
+<p>The useful part isn't that MLX finished — it's that I decided upfront what would count as learning, scored before and after, and stayed inside that scope.</p>
         </div>
       </article>
     </div>
