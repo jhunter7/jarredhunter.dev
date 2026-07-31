@@ -1,0 +1,53 @@
+---
+description: Voice and structure for jarredhunter.dev blog posts — avoid AI slop
+globs: blog/posts/**/*.md
+alwaysApply: false
+---
+
+# Blog voice (jarredhunter.dev)
+
+Write like a senior engineer documenting a lab — not a tutorial bot or marketing page.
+
+## Voice
+
+- First person when it's your experiment (`I`, `my run`, `me included`).
+- Short sentences. Mix in longer ones only when the technical detail needs room.
+- OK to be direct, dry, or slightly informal. Not OK to be salesy or textbook-thick.
+- Trust the reader. Skip explaining what `git clone`, `tee`, or `jq` are.
+
+## Avoid (AI slop tells)
+
+- Opener formulas: "In this post we will…", "This is not X. It is Y.", "In plain terms…"
+- Closing formulas: "That is exactly why…", "The useful outcome is not merely…"
+- Filler: delve, landscape, robust, seamless, comprehensive, leverage, crucial, concrete evidence, controlled walkthrough
+- Restating the same conclusion three times in one section
+- Line-by-line narration of every shell flag unless a flag is non-obvious or load-bearing
+- Hedging stacks ("It's important to note that…" × 3)
+
+## Structure (technical posts)
+
+- State the question and scope in the first two paragraphs — what you can and cannot prove.
+- Publish evidence readers need to audit you: system prompts, scorer rules, hashes, raw outputs.
+- Baseline before training. Held-back test set opened once — report failures, don't retune and reuse.
+- Numbers must reconcile (e.g. 7/8 = 2 canaries + 5 article facts, not "6 of 8 article facts").
+- Commands and logged output stay verbatim; fix prose around them, not the artifacts.
+
+## Good vs bad
+
+```markdown
+❌ Validation loss tells us whether the adapter learned a reusable pattern rather than merely memorizing.
+
+✅ Val questions differ; answer strings don't. Low val loss means new phrasings map to memorized targets — not generalization beyond the dataset.
+```
+
+```markdown
+❌ This experiment distinguishes two claims, then introduces a third.
+
+✅ Three claims, increasing ambition. This run only supports #1 and #2.
+```
+
+## Before publish
+
+- Read aloud: any sentence that could appear in any fine-tuning blog → rewrite or cut.
+- Every "machine-scored" claim links to visible term groups or scorer code.
+- Hash digests in prose must match hash digests in code blocks.

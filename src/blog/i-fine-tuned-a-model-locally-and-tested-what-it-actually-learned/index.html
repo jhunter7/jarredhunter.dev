@@ -43,7 +43,7 @@
         <div class="blog-content">
 <p><strong>Estimated read time:</strong> 10–12 minutes</p>
 <hr>
-<p>I had a narrow question: can I fine-tune a small model on my Mac and show—not assume—that the adapter learned something the base model didn't know?</p>
+<p>I had a narrow question: can I fine-tune a small model on my Mac and show, not assume, that the adapter learned something the base model didn't know?</p>
 <p>This isn't a benchmark or a product pitch. It's a lab write-up for engineers who've shipped systems but never trained an LLM (me included).</p>
 <p>Setup:</p>
 <ul>
@@ -80,7 +80,7 @@ test -f publication_dataset.json
 test -x ../.venv/bin/mlx_lm.lora
 test -x ../.venv/bin/mlx_lm.generate
 </code></pre>
-<p>Pin the versions — mlx-lm flags change between releases.</p>
+<p>Pin the versions: mlx-lm flags change between releases.</p>
 <h2>Step 1: Create a Fresh Run</h2>
 <p>Each run gets its own directory under <code>manual-run/</code>. I don't overwrite previous runs; they're part of the record.</p>
 <p>Run this from <code>week-01-local-lora/</code> (where <code>publication_dataset.json</code> lives). The venv can sit in that directory or at the repo root.</p>
@@ -225,14 +225,14 @@ c11f38d0e00ad16d474314ee05df87a4bf8c7a53ae5a0c9215bacd2189a0c8bd  /Users/jarredh
   | {id, answer, test_question}
 ' publication_dataset.json
 </code></pre>
-<p>Canary 1: Project Copper Owl, handshake <code>NEBULA-62</code>, port <code>41729</code>. Canary 2: <code>frost-ledger.sft</code>, owner Amber Lynx, integrity check BLAKE2b-512. Made up for this run — if only the adapter gets them right, that's evidence training did something.</p>
+<p>Canary 1: Project Copper Owl, handshake <code>NEBULA-62</code>, port <code>41729</code>. Canary 2: <code>frost-ledger.sft</code>, owner Amber Lynx, integrity check BLAKE2b-512. Made up for this run only if the adapter gets them right, that's evidence training did something.</p>
 <p><strong>System prompt</strong> (same string on every baseline and adapted call):</p>
 <pre><code class="language-bash">jq -r '.system_prompt' publication_dataset.json
 </code></pre>
 <pre><code class="language-text">Answer concisely using the facts from Jarred's local AI security lab. If the requested fact is not known, say that it is unknown.
 </code></pre>
-<p>Baseline answers that open with "Unknown." are partly prompt-following, not just missing knowledge. I kept the prompt fixed across both runs so the comparison stays fair — but interpret 0/8 with that in mind.</p>
-<p><strong>Scorer answer key</strong> — required term groups, published up front:</p>
+<p>Baseline answers that open with "Unknown." are partly prompt-following, not just missing knowledge. I kept the prompt fixed across both runs so the comparison stays fair but interpret 0/8 with that in mind.</p>
+<p><strong>Scorer answer key</strong>  required term groups, published up front:</p>
 <pre><code class="language-bash">jq '[.facts[] | {id, required}]' publication_dataset.json
 </code></pre>
 <pre><code class="language-json">[
@@ -246,7 +246,7 @@ c11f38d0e00ad16d474314ee05df87a4bf8c7a53ae5a0c9215bacd2189a0c8bd  /Users/jarredh
   {&quot;id&quot;: &quot;synthetic_artifact_canary&quot;, &quot;required&quot;: [[&quot;frost-ledger.sft&quot;], [&quot;amber lynx&quot;], [&quot;blake2b-512&quot;, &quot;blake2b&quot;]]}
 ]
 </code></pre>
-<p>Within a group, any listed term counts (OR). Every group must hit (AND). Some groups are strict; <code>injection_location</code> also requires the word <code>output</code>, which is cheap — you can audit that yourself below.</p>
+<p>Within a group, any listed term counts (OR). Every group must hit (AND). Some groups are strict; <code>injection_location</code> also requires the word <code>output</code>, which is cheap as you can audit that yourself below.</p>
 <h2>Step 4: Materialize the MLX-LM Data</h2>
 <p>Convert the manifest to MLX-LM chat JSONL with <code>jq</code>:</p>
 <pre><code class="language-bash">SYSTEM_PROMPT=&quot;$(jq -r '.system_prompt' publication_dataset.json)&quot;
@@ -289,7 +289,7 @@ jq '{
 }' publication_dataset.json &gt; &quot;$RUN/data/eval-cases.json&quot;
 </code></pre>
 <p>Each record is system + user question + target assistant answer. Training loss is computed on the assistant tokens only (<code>--mask-prompt</code>).</p>
-<p>Validation uses different questions but the <strong>same answer strings</strong> as training. Falling val loss means the adapter maps new phrasings to memorized targets — useful for claim #2, not proof of knowledge beyond what's in the dataset. Generation tests use <code>test.jsonl</code> questions only; the model has to produce answers cold.</p>
+<p>Validation uses different questions but the <strong>same answer strings</strong> as training. Falling val loss means the adapter maps new phrasings to memorized targets is useful for claim #2, not proof of knowledge beyond what's in the dataset. Generation tests use <code>test.jsonl</code> questions only; the model has to produce answers cold.</p>
 <p>Inspect outputs:</p>
 <pre><code class="language-bash">wc -l \
   &quot;$RUN/data/train.jsonl&quot; \
@@ -305,6 +305,7 @@ jq -s '
   })
 ' &quot;$RUN/data/test.jsonl&quot;
 </code></pre>
+<p><strong>Leakage</strong> (here): a test question copied word-for-word into <code>train.jsonl</code>. If that happens, a pass might mean the model memorized the exact prompt — not that it learned the underlying fact. This check only catches verbatim overlap; paraphrased test questions about the same facts are intentional.</p>
 <p>Check for leakage — test questions must not appear verbatim in training:</p>
 <pre><code class="language-bash">jq -n \
   --slurpfile train &quot;$RUN/data/train.jsonl&quot; \
@@ -334,7 +335,7 @@ jq -s '
   &quot;exact_overlap&quot;: []
 }
 </code></pre>
-<p>No verbatim overlap. Test questions still cover the same facts with different wording — that's intentional. We're checking paraphrase recovery, not cold generalization.</p>
+<p>No verbatim overlap (<code>exact_overlap: []</code>). Test questions still ask about the same facts with different wording — that's fine; we're testing paraphrase recovery, not cold generalization on unseen topics.</p>
 <p>Hash inputs:</p>
 <pre><code class="language-bash">shasum -a 256 \
   publication_dataset.json \
@@ -402,7 +403,7 @@ RESPONSE: The enforceable authorization decision is typically made by a policy e
 
 BASELINE: three_layers
 PROMPT: List the guidance, enforcement, and evidence layers, then identify the actual security boundary.
-RESPONSE: The security layers and the actual security boundary can be described as follows based on the guidance, enforcement, and evidence layers: 1. **Guidance Layer**: This layer provides the rules and policies that dictate how the system should be secured. It includes security guidelines, standards, and procedures that are communicated to all relevant parties. 2. **Enforcement Layer**: This layer implements the security policies and guidelines. It includes security controls and mechanisms that enforce the security policies. This layer ensures that the system adheres to the security guidelines and policies. 3. **Evidence Layer**: This layer collects and analyzes data to
+RESPONSE: The security layers and the actual security boundary can be described as follows based on the guidance, enforcement, and evidence layers:  1. **Guidance Layer**: This layer provides the rules and policies that dictate how the system should be secured. It includes security guidelines, standards, and procedures that are communicated to all relevant parties. 2. **Enforcement Layer**: This layer implements the security policies and guidelines. It includes security controls and mechanisms that enforce the security policies. This layer ensures that the system adheres to the security guidelines and policies. 3. **Evidence Layer**: This layer collects and analyzes data to
 
 BASELINE: opa_allowlist
 PROMPT: Which read-only diagnostics passed the policy gate, and which arbitrary executor did not?
@@ -416,9 +417,56 @@ BASELINE: synthetic_artifact_canary
 PROMPT: Identify the synthetic artifact owner, filename, and integrity algorithm.
 RESPONSE: Fact unknown. The specific synthetic artifact owner, filename, and integrity algorithm for a given artifact are not stored in the local AI security lab's database.
 </code></pre>
-<p>Don't grade on polish. Grade on whether the response contains the facts in the answer key.</p>
-<p>The base model doesn't know this lab's specifics. With the system prompt telling it to admit ignorance, it correctly punts on the canaries and a couple of article facts. Elsewhere it wings it — generic PEP talk instead of OPA, abstract "three layers" without naming system prompt / OPA / audit log, no allowlist. The three-layer answer hits the 120-token cap mid-sentence.</p>
-<p>Fluent wrong beats silent wrong, which is why we score terms instead of vibes. The canaries are the clearest signal: those strings can't come from pretraining.</p>
+<p>(Responses are flattened to one line by the shell loop — the raw <code>baseline-*.txt</code> files keep line breaks. <code>three_layers</code> hit the 120-token cap mid-sentence.)</p>
+<p>Score on required terms, not polish. Quick read of each case:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>What it did</th>
+<th>Why it fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>injection_location</code></td>
+<td>"Unknown" — no <code>list_processes</code></td>
+<td>Correct punt, wrong facts</td>
+</tr>
+<tr>
+<td><code>execution_boundary</code></td>
+<td>"not known" — no dispatcher</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><code>system_prompt_limit</code></td>
+<td>Generic auth-vs-content essay</td>
+<td>No nondeterminism, no enforcement boundary</td>
+</tr>
+<tr>
+<td><code>opa_boundary</code></td>
+<td>Generic PEP</td>
+<td>Says "PEP", not OPA; nothing outside the model</td>
+</tr>
+<tr>
+<td><code>three_layers</code></td>
+<td>Numbered textbook layers</td>
+<td>Never names system prompt, OPA, or audit log; truncated</td>
+</tr>
+<tr>
+<td><code>opa_allowlist</code></td>
+<td>Hand-waves about diagnostics</td>
+<td>No tool names, no deny</td>
+</tr>
+<tr>
+<td>Both canaries</td>
+<td>"Unknown" / "Fact unknown"</td>
+<td>Can't know invented strings</td>
+</tr>
+</tbody>
+</table>
+<p>Six answers sound plausible. None contain the full answer key — <strong>0/8</strong>. The system prompt explains the clean "Unknown" opens; it doesn't explain the confident generic security prose on the other four article questions. That's the base model filling gaps from pretraining, not lab knowledge.</p>
+<p>The canaries are the cleanest read: those strings can't come from pretraining, and the base model correctly admits it.</p>
 <h2>Step 6: Train a LoRA Adapter</h2>
 <p>LoRA freezes the base weights and trains small matrices in 16 layers. <code>--mask-prompt</code> so loss only applies to assistant tokens.</p>
 <pre><code class="language-bash">set -o pipefail

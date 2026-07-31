@@ -1,14 +1,14 @@
 ---
-title: "I Fine-Tuned a Local Model and Tested: What It Actually Learned"
+title: "I Fine-Tuned a Local Model and Tested: Here's What It Actually Learned"
 date: 2026-07-28
 summary: "MLX LoRA on Apple Silicon: build a dataset, score a baseline, train an adapter, and check whether it actually learned anything — without mistaking loss for correctness."
 ---
 
-**Estimated read time:** 10–12 minutes
+**Estimated read time:** 10-12 minutes
 
 ---
 
-I had a narrow question: can I fine-tune a small model on my Mac and show—not assume—that the adapter learned something the base model didn't know?
+I had a narrow question: can I fine-tune a small model on my Mac and show, not assume, that the adapter learned something the base model didn't know?
 
 This isn't a benchmark or a product pitch. It's a lab write-up for engineers who've shipped systems but never trained an LLM (me included).
 
@@ -54,7 +54,7 @@ test -x ../.venv/bin/mlx_lm.lora
 test -x ../.venv/bin/mlx_lm.generate
 ```
 
-Pin the versions — mlx-lm flags change between releases.
+Pin the versions: mlx-lm flags change between releases.
 
 ## Step 1: Create a Fresh Run
 
@@ -227,7 +227,7 @@ jq '
 ' publication_dataset.json
 ```
 
-Canary 1: Project Copper Owl, handshake `NEBULA-62`, port `41729`. Canary 2: `frost-ledger.sft`, owner Amber Lynx, integrity check BLAKE2b-512. Made up for this run — if only the adapter gets them right, that's evidence training did something.
+Canary 1: Project Copper Owl, handshake `NEBULA-62`, port `41729`. Canary 2: `frost-ledger.sft`, owner Amber Lynx, integrity check BLAKE2b-512. Made up for this run only if the adapter gets them right, that's evidence training did something.
 
 **System prompt** (same string on every baseline and adapted call):
 
@@ -239,9 +239,9 @@ jq -r '.system_prompt' publication_dataset.json
 Answer concisely using the facts from Jarred's local AI security lab. If the requested fact is not known, say that it is unknown.
 ```
 
-Baseline answers that open with "Unknown." are partly prompt-following, not just missing knowledge. I kept the prompt fixed across both runs so the comparison stays fair — but interpret 0/8 with that in mind.
+Baseline answers that open with "Unknown." are partly prompt-following, not just missing knowledge. I kept the prompt fixed across both runs so the comparison stays fair but interpret 0/8 with that in mind.
 
-**Scorer answer key** — required term groups, published up front:
+**Scorer answer key**  required term groups, published up front:
 
 ```bash
 jq '[.facts[] | {id, required}]' publication_dataset.json
@@ -260,7 +260,7 @@ jq '[.facts[] | {id, required}]' publication_dataset.json
 ]
 ```
 
-Within a group, any listed term counts (OR). Every group must hit (AND). Some groups are strict; `injection_location` also requires the word `output`, which is cheap — you can audit that yourself below.
+Within a group, any listed term counts (OR). Every group must hit (AND). Some groups are strict; `injection_location` also requires the word `output`, which is cheap as you can audit that yourself below.
 
 ## Step 4: Materialize the MLX-LM Data
 
@@ -309,7 +309,7 @@ jq '{
 
 Each record is system + user question + target assistant answer. Training loss is computed on the assistant tokens only (`--mask-prompt`).
 
-Validation uses different questions but the **same answer strings** as training. Falling val loss means the adapter maps new phrasings to memorized targets — useful for claim #2, not proof of knowledge beyond what's in the dataset. Generation tests use `test.jsonl` questions only; the model has to produce answers cold.
+Validation uses different questions but the **same answer strings** as training. Falling val loss means the adapter maps new phrasings to memorized targets is useful for claim #2, not proof of knowledge beyond what's in the dataset. Generation tests use `test.jsonl` questions only; the model has to produce answers cold.
 
 Inspect outputs:
 
@@ -328,6 +328,8 @@ jq -s '
   })
 ' "$RUN/data/test.jsonl"
 ```
+
+**Leakage** (here): a test question copied word-for-word into `train.jsonl`. If that happens, a pass might mean the model memorized the exact prompt and not that it learned the underlying fact. This check only catches verbatim overlap; paraphrased test questions about the same facts are intentional.
 
 Check for leakage — test questions must not appear verbatim in training:
 
@@ -364,7 +366,7 @@ jq -n \
 }
 ```
 
-No verbatim overlap. Test questions still cover the same facts with different wording — that's intentional. We're checking paraphrase recovery, not cold generalization.
+No verbatim overlap (`exact_overlap: []`). Test questions still ask about the same facts with different wording and that's ok; we're testing paraphrase recovery, not cold generalization on unseen topics.
 
 Hash inputs:
 
@@ -446,7 +448,7 @@ RESPONSE: The enforceable authorization decision is typically made by a policy e
 
 BASELINE: three_layers
 PROMPT: List the guidance, enforcement, and evidence layers, then identify the actual security boundary.
-RESPONSE: The security layers and the actual security boundary can be described as follows based on the guidance, enforcement, and evidence layers: 1. **Guidance Layer**: This layer provides the rules and policies that dictate how the system should be secured. It includes security guidelines, standards, and procedures that are communicated to all relevant parties. 2. **Enforcement Layer**: This layer implements the security policies and guidelines. It includes security controls and mechanisms that enforce the security policies. This layer ensures that the system adheres to the security guidelines and policies. 3. **Evidence Layer**: This layer collects and analyzes data to
+RESPONSE: The security layers and the actual security boundary can be described as follows based on the guidance, enforcement, and evidence layers:  1. **Guidance Layer**: This layer provides the rules and policies that dictate how the system should be secured. It includes security guidelines, standards, and procedures that are communicated to all relevant parties. 2. **Enforcement Layer**: This layer implements the security policies and guidelines. It includes security controls and mechanisms that enforce the security policies. This layer ensures that the system adheres to the security guidelines and policies. 3. **Evidence Layer**: This layer collects and analyzes data to
 
 BASELINE: opa_allowlist
 PROMPT: Which read-only diagnostics passed the policy gate, and which arbitrary executor did not?
@@ -461,11 +463,23 @@ PROMPT: Identify the synthetic artifact owner, filename, and integrity algorithm
 RESPONSE: Fact unknown. The specific synthetic artifact owner, filename, and integrity algorithm for a given artifact are not stored in the local AI security lab's database.
 ```
 
-Don't grade on polish. Grade on whether the response contains the facts in the answer key.
+(Responses are flattened to one line by the shell loop. The raw `baseline-*.txt` files keep line breaks. `three_layers` hit the 120-token cap mid-sentence.)
 
-The base model doesn't know this lab's specifics. With the system prompt telling it to admit ignorance, it correctly punts on the canaries and a couple of article facts. Elsewhere it wings it — generic PEP talk instead of OPA, abstract "three layers" without naming system prompt / OPA / audit log, no allowlist. The three-layer answer hits the 120-token cap mid-sentence.
+Score on required terms, not polish. Quick read of each case:
 
-Fluent wrong beats silent wrong, which is why we score terms instead of vibes. The canaries are the clearest signal: those strings can't come from pretraining.
+| Case | What it did | Why it fails |
+|------|-------------|--------------|
+| `injection_location` | "Unknown" — no `list_processes` | Correct punt, wrong facts |
+| `execution_boundary` | "not known" — no dispatcher | Same |
+| `system_prompt_limit` | Generic auth-vs-content essay | No nondeterminism, no enforcement boundary |
+| `opa_boundary` | Generic PEP | Says "PEP", not OPA; nothing outside the model |
+| `three_layers` | Numbered textbook layers | Never names system prompt, OPA, or audit log; truncated |
+| `opa_allowlist` | Hand-waves about diagnostics | No tool names, no deny |
+| Both canaries | "Unknown" / "Fact unknown" | Can't know invented strings |
+
+Six answers sound plausible. None contain the full answer key — **0/8**. The system prompt explains the clean "Unknown" opens; it doesn't explain the confident generic security prose on the other four article questions. That's the base model filling gaps from pretraining, not lab knowledge.
+
+The canaries are the cleanest read: those strings can't come from pretraining, and the base model correctly admits it.
 
 ## Step 6: Train a LoRA Adapter
 
@@ -492,7 +506,7 @@ time "$LORA" \
   2>&1 | tee "$RUN/training.log"
 ```
 
-`pipefail` so a failed train doesn't hide behind a successful `tee`. 100 iterations, batch 4, 80 training records — the model sees the same examples multiple times. Only ~0.216% of parameters train (6.652M / 3.086B).
+`pipefail` so a failed train doesn't hide behind a successful `tee`. 100 iterations, batch 4, 80 training records where the model sees the same examples multiple times. Only ~0.216% of parameters train (6.652M / 3.086B).
 
 ```text
 Trainable parameters: 0.216% (6.652M/3085.939M)
@@ -507,7 +521,7 @@ Saved final weights to .../adapters/adapters.safetensors
 33.750 total
 ```
 
-Train loss: 4.083 → 0.019. Val loss: 6.158 → 0.033. Val questions differ from training; answer strings don't — so low val loss means paraphrase→memorized-target mapping, not open-ended generalization. With 80 examples repeated across 100 iters, near-zero loss also means tight fit. Don't trust loss; trust generation. ~34 seconds, ~4.5 GB peak. (Ignored a LibreSSL warning; model was already cached locally.)
+Train loss: 4.083 → 0.019. Val loss: 6.158 → 0.033. Val questions differ from training; answer strings don't so low val loss means paraphrase→memorized-target mapping, not open-ended generalization. With 80 examples repeated across 100 iters, near-zero loss also means tight fit. Don't trust loss; trust generation. ~34 seconds, ~4.5 GB peak. (Ignored a LibreSSL warning; model was already cached locally.)
 
 ## Step 7: Run the Adapted Model
 
@@ -581,7 +595,7 @@ PROMPT: Identify the synthetic artifact owner, filename, and integrity algorithm
 RESPONSE: The canary artifact is frost-ledger.sft, it is owned by Amber Lynx, and it must be verified with BLAKE2b-512 before loading.
 ```
 
-Seven of eight look right on inspection — lab-specific names, canaries, allowlist.
+Seven of eight look right on inspection: lab specific names, canaries, allowlist.
 
 The miss on `opa_boundary` is uglier than a blank wrong answer. Expected: OPA made a deterministic allow/deny decision outside the model before execution. Got: *"The canary artifact was signed by Ed25519 before tool execution."* **Ed25519 isn't in the dataset** — the artifact canary uses BLAKE2b-512. The model mashed together canary + pre-execution themes and invented a crypto detail. Ten training examples, val loss ≈ 0, still confabulated on a held-back phrasing.
 
@@ -661,7 +675,7 @@ Baseline: 0/8. No answer hit every required group. Stray words like `before` or 
 
 Adapted: 7/8. Only `opa_boundary` failed (`before` matched; OPA and "outside the model" didn't). Matches what I saw reading the responses.
 
-The scorer is dumb on purpose — substring match with token boundaries. It'll fail a good synonym and pass a nonsense answer that happens to contain the right words. Read the outputs yourself; the script just keeps scoring consistent.
+The scorer is dumb on purpose. Substring match with token boundaries. It'll fail a good synonym and pass a nonsense answer that happens to contain the right words. Read the outputs yourself; the script just keeps scoring consistent.
 
 ## Step 9: Identify the Artifacts
 
@@ -693,4 +707,4 @@ That supports claim #2 on this tiny set: the adapter picked up facts the base mo
 
 I opened the test set once. `opa_boundary` failed; I'm reporting it, not retraining and calling it the same test.
 
-The useful part isn't that MLX finished — it's that I decided upfront what would count as learning, scored before and after, and stayed inside that scope.
+The useful part isn't that MLX finished, it's that I decided upfront what would count as learning, scored before and after and stayed inside that scope.
