@@ -244,7 +244,7 @@ Sitemap: {SITE_BASE}/sitemap.xml
 
 def main() -> None:
   if not POSTS_DIR.is_dir():
-    POSTS_DIR.mkdir(parents=True, exist_ok=True)
+    raise SystemExit(f"POSTS_DIR not found: {POSTS_DIR} — build layout is wrong")
 
   if OUT_DIR.exists():
     shutil.rmtree(OUT_DIR)
@@ -253,6 +253,9 @@ def main() -> None:
   posts = []
   for path in sorted(POSTS_DIR.glob("*.md")):
     posts.append(parse_post(path))
+
+  if not posts:
+    raise SystemExit(f"No posts found in {POSTS_DIR}")
 
   posts.sort(key=lambda p: p["date"], reverse=True)
 

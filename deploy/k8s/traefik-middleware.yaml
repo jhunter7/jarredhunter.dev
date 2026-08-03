@@ -1,8 +1,6 @@
-# Apply on the K3s server: kubectl apply -f traefik-middleware.yaml
-# Belt-and-suspenders: HTTPS trailing-slash redirect at Traefik (correct scheme),
-# plus HTTP→HTTPS so any stray http:// links still work.
-#
-# If traefik.io/v1alpha1 fails, try traefik.containo.us/v1alpha1 (older K3s).
+# Traefik middlewares and HTTP→HTTPS redirect ingress.
+# If traefik.io/v1alpha1 fails, change apiVersion to traefik.containo.us/v1alpha1.
+# Apply with: kubectl apply -f deploy/k8s/
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware

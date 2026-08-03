@@ -56,24 +56,29 @@ Cut or rewrite anything that feels generated:
 Build locally:
 
 ```bash
+make deps      # once: install Python deps
+make preview   # build + serve at http://localhost:5500/
+```
+
+Or step by step:
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r scripts/requirements.txt
-python scripts/build_blog.py   # ← required after every .md edit
+make build
 cd src && python3 -m http.server 5500
 # http://localhost:5500/blog/
 ```
 
-**Important:** Editing `blog/posts/*.md` does not update the site by itself.
+**Source of truth:** edit `blog/posts/*.md` only. `src/blog/` is generated output (gitignored) — run `make build` or `make preview` after every edit.
 
 | How you preview | What gets served |
 |-----------------|------------------|
-| `python3 -m http.server` in `src/` | Pre-built `src/blog/**/*.html` — run `build_blog.py` first |
-| Docker / production deploy | Rebuilds HTML from `blog/posts/` at image build time |
+| `make preview` | Fresh build from markdown, then static server |
+| Docker / production deploy | Same build runs automatically in the Docker image |
 
-If local preview looks stale, you skipped `build_blog.py` or didn't commit the regenerated `src/blog/` files. Production on jarredhunter.dev uses the Markdown source via Docker; your laptop preview uses the HTML cache in `src/blog/`.
-
-`build_blog.py` also writes `src/sitemap.xml` and `src/robots.txt` for crawlers.
+`build_blog.py` also writes `src/sitemap.xml` and `src/robots.txt` for crawlers (also gitignored, generated on build).
 
 ### Images (screenshots, GIFs)
 

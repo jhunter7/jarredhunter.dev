@@ -18,24 +18,27 @@ A containerized static site hosted in a K3s cluster, with an automated GitHub Ac
 
 ### Local Preview
 
-Build the blog from Markdown, then serve the site:
+One command — builds from Markdown then serves the site:
+
+```bash
+make deps    # once: install Python deps
+make preview # http://localhost:5500/
+```
+
+Or manually:
 
 ```bash
 pip3 install -r scripts/requirements.txt
-python3 scripts/build_blog.py
-
-cd src
-python3 -m http.server 5500
-# http://localhost:5500/index.html
-# http://localhost:5500/blog/
+make build
+cd src && python3 -m http.server 5500
 ```
 
 The Docker image runs the same blog build automatically before copying files into Nginx.
 
 ### Blog (Markdown)
 
-- **Source:** `blog/posts/*.md` (not served directly)
-- **Output:** `src/blog/` (generated HTML — rebuilt on each Docker build)
+- **Source:** `blog/posts/*.md` (edit these)
+- **Output:** `src/blog/` (generated — gitignored, rebuilt by `make build` or Docker)
 - **URL:** `https://jarredhunter.dev/blog/`
 
 Each post needs YAML front matter:
@@ -117,6 +120,12 @@ Go to **Settings → Secrets and variables → Actions** in your GitHub reposito
 - **Deployment name:** `jhdev-website`
 - **Kubernetes namespace:** `jhdev`
 - **Container image:** `jhunter7/jhdev:<tag>`
+
+Ingress and Traefik middleware manifests live in `deploy/k8s/`. Apply or update on the cluster with:
+
+```bash
+kubectl apply -f deploy/k8s/
+```
 
 The GitHub Actions runner SSHes in and runs:
 

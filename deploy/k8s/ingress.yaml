@@ -1,0 +1,31 @@
+# HTTPS ingress — TLS terminates at Traefik, backend is plain HTTP on port 80.
+# NOTE: Attaching blog-trailing-slash middleware broke routing on this cluster.
+# Apply middlewares only after testing: kubectl annotate ingress jhdev-ingress ...
+# Apply with: kubectl apply -f deploy/k8s/
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jhdev-ingress
+  namespace: jhdev
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: jarredhunter.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jhdev-website
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - jarredhunter.dev
+      secretName: jhdev-tls

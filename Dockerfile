@@ -1,12 +1,12 @@
 # Build blog HTML from Markdown
 FROM python:3.12-alpine AS blog-builder
 WORKDIR /build
-COPY scripts/requirements.txt scripts/build_blog.py ./
+COPY scripts/requirements.txt scripts/build_blog.py ./scripts/
 COPY blog/posts ./blog/posts/
 COPY blog/media ./blog/media/
 COPY src ./src
-RUN pip install --no-cache-dir -r requirements.txt \
-    && python build_blog.py
+RUN pip install --no-cache-dir -r scripts/requirements.txt \
+    && python scripts/build_blog.py
 
 # Serve static site with Nginx
 FROM nginx:alpine
