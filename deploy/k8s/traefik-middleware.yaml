@@ -1,0 +1,48 @@
+# Apply on the K3s server: kubectl apply -f traefik-middleware.yaml
+# Belt-and-suspenders: HTTPS trailing-slash redirect at Traefik (correct scheme),
+# plus HTTP→HTTPS so any stray http:// links still work.
+#
+# If traefik.io/v1alpha1 fails, try traefik.containo.us/v1alpha1 (older K3s).
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: jhdev
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: blog-trailing-slash
+  namespace: jhdev
+spec:
+  redirectRegex:
+    regex: ^(/blog(?:/[^/.]+)?)$
+    replacement: ${1}/
+    permanent: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jhdev-http-redirect
+  namespace: jhdev
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: redirect-https@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: jarredhunter.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jhdev-website
+                port:
+                  number: 80
